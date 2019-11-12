@@ -6,4 +6,17 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" />
+    tools:context=".MapsActivity" >
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:text="Add"
+        android:padding="10dp"
+        android:layout_marginBottom="20dp"
+        android:paddingRight="10dp"
+        android:onClick="addButtonPressed">
+    </Button>
+
+</fragment>
