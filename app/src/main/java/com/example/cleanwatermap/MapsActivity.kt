@@ -1,5 +1,7 @@
 package com.example.cleanwatermap
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
@@ -19,6 +21,22 @@ import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import java.security.AccessController.getContext
+
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.core.app.ActivityCompat
+
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.tbruyelle.rxpermissions2.RxPermissions
+
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -58,6 +76,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun addButtonPressed(view: android.view.View) {
         // do stuff
-        Log.d(TAG, "button pressed! from log.d")
+        takeWaterDispensaryPhoto()
+    }
+
+     private fun askForRunTimeCameraPermission() {
+//         RxPermissions(this)
+//             .request(Manifest.permission.CAMERA) // ask single or multiple permission once
+//             .subscribe({ granted ->
+//                 if (granted) {
+//                    Log.v(TAG, "Camera permission alloweed")
+//                 } else {
+//                     Log.e("Camera permission denied")
+//                 }
+//             })
+         RxPermissions(this)
+             .request(Manifest.permission.CAMERA) // ask single or multiple permission once
+             .subscribe { granted ->
+                 if (granted!!) {
+                     Log.v(TAG, "Camera permission allowed")
+                 } else {
+                     Log.e(TAG, "Camera permission denied")
+                 }
+             }
+     }
+
+    private fun doesTheUserGrantedCameraPermission() : Boolean {
+         val pm = getApplicationContext().getPackageManager()
+        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
+
+    private fun takeWaterDispensaryPhoto() {
+        askForRunTimeCameraPermission()
+        if (doesTheUserGrantedCameraPermission()) {
+
+        }
+        else
+        {
+            Log.e(TAG, "ERROR : Camera feature is deactivated at runtime")
+        }
     }
 }
