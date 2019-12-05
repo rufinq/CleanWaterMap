@@ -1,42 +1,28 @@
 package com.example.cleanwatermap
 
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+// import androidx.core.app.ComponentActivity.ExtraData
+// import androidx.core.app.ComponentActivity.ExtraData
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-// import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-// import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import java.security.AccessController.getContext
-
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import androidx.core.app.ActivityCompat
-
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
-
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
+import es.dmoral.toasty.Toasty
+import retrofit2.Call
+import java.security.AccessController.getContext
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -46,9 +32,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private lateinit var mMap: GoogleMap
+    private val REQUEST_IMAGE_CAPTURE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -68,27 +56,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val planter = LatLng(18.806909, 98.964652)
+        //mMap.addMarker(MarkerOptions().position(planter).title("Planter 's Space"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
+        mMap.animateCamera(CameraUpdateFactory.zoomTo( 16.0f ))
+        this.getAllWaterProviderOnMAp()
+    }
+
+    fun updateGoogleMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
+        for (aWaterProvider : WaterProvider in waterProviders)  {
+            val TDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
+            val title : String = "TDS Value: $TDSValue"
+            val position = aWaterProvider.waterProviderLocation.convertToLatLng()
+            mMap.addMarker(MarkerOptions().position(position).title(title))
+        }
+    }
+
+    fun getAllWaterProviderOnMAp() {
+        // TODO implement this
+        var APICall : Call<List<WaterProvider>> = CleanWaterMapServerAPISingleton.API().waterProviders
+        APICall.enqueue {
+            onResponse = {
+                if (it.isSuccessful() && it.body() != null) {
+                    val waterProviders : List<WaterProvider>? = it.body()
+                    if (waterProviders != null) {
+                        updateGoogleMapFromWaterProviderList(waterProviders)
+                    }
+                }
+            }
+
+            onFailure = {
+                Toasty.warning(applicationContext, "App Unable to connect to server").show()
+            }
+        }
     }
 
     fun addButtonPressed(view: android.view.View) {
-        // do stuff
         takeWaterDispensaryPhoto()
     }
 
      private fun askForRunTimeCameraPermission() {
-//         RxPermissions(this)
-//             .request(Manifest.permission.CAMERA) // ask single or multiple permission once
-//             .subscribe({ granted ->
-//                 if (granted) {
-//                    Log.v(TAG, "Camera permission alloweed")
-//                 } else {
-//                     Log.e("Camera permission denied")
-//                 }
-//             })
          RxPermissions(this)
              .request(Manifest.permission.CAMERA) // ask single or multiple permission once
              .subscribe { granted ->
@@ -101,18 +108,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      }
 
     private fun doesTheUserGrantedCameraPermission() : Boolean {
-         val pm = getApplicationContext().getPackageManager()
+         val pm = applicationContext.packageManager
         return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
     }
 
     private fun takeWaterDispensaryPhoto() {
         askForRunTimeCameraPermission()
         if (doesTheUserGrantedCameraPermission()) {
-
+            dispatchTakePictureIntent()
         }
         else
         {
             Log.e(TAG, "ERROR : Camera feature is deactivated at runtime")
         }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
+            val extras: Bundle? = data.getExtras()
+            if (extras != null) {
+                val photo: Bitmap? = extras.get("data") as Bitmap
+                if (photo != null) {
+                    switchToAddingWaterRefillStationActivityWithPhotoData(photo)
+                }
+            }
+        }
+    }
+
+    private fun switchToAddingWaterRefillStationActivityWithPhotoData(photoData: Bitmap) {
+        val intent = Intent(this, AddingWaterRefillStationActivity::class.java)
+        intent.putExtra("data", photoData)
+        startActivity(intent)
     }
 }
