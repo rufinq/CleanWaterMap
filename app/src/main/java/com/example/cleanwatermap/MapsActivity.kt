@@ -21,6 +21,8 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import es.dmoral.toasty.Toasty
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -82,20 +84,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     fun getAllWaterProviderOnMAp() {
         // TODO implement this
         var APICall : Call<List<WaterProvider>> = CleanWaterMapServerAPISingleton.API().waterProviders
-        APICall.enqueue {
-            onResponse = {
-                if (it.isSuccessful() && it.body() != null) {
-                    val waterProviders : List<WaterProvider>? = it.body()
+        APICall.enqueue(object : Callback<List<WaterProvider>> {
+
+            override fun onResponse(call: Call<List<WaterProvider>>, response: Response<List<WaterProvider>> ) {
+                if (response.isSuccessful() && response.body() != null) {
+                    val waterProviders : List<WaterProvider>? = response.body()
                     if (waterProviders != null) {
                         updateGoogleMapFromWaterProviderList(waterProviders)
                     }
                 }
             }
 
-            onFailure = {
+            override fun onFailure(call: Call<List<WaterProvider>>, t: Throwable?) {
                 Toasty.warning(applicationContext, "App Unable to connect to server").show()
             }
-        }
+        })
     }
 
     fun addButtonPressed(view: android.view.View) {
