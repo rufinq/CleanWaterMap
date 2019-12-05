@@ -53,4 +53,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
 
     implementation 'com.github.GrenderG:Toasty:1.4.2'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
