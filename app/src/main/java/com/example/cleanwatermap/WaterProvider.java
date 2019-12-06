@@ -1,8 +1,7 @@
 package com.example.cleanwatermap;
 
-import java.time.LocalDateTime;
+import org.threeten.bp.LocalDateTime;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 public class WaterProvider {

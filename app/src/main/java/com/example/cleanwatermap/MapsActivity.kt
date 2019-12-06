@@ -82,7 +82,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun getAllWaterProviderOnMAp() {
-        // TODO implement this
         var APICall : Call<List<WaterProvider>> = CleanWaterMapServerAPISingleton.API().waterProviders
         APICall.enqueue(object : Callback<List<WaterProvider>> {
 
@@ -90,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (response.isSuccessful() && response.body() != null) {
                     val waterProviders : List<WaterProvider>? = response.body()
                     if (waterProviders != null) {
-                        updateGoogleMapFromWaterProviderList(waterProviders)
+                         updateGoogleMapFromWaterProviderList(waterProviders)
                     }
                 }
             }

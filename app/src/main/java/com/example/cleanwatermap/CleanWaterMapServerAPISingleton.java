@@ -5,8 +5,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CleanWaterMapServerAPISingleton {
 
-    private static volatile CleanWaterMapServerAPISingleton instance =
-            new CleanWaterMapServerAPISingleton();
+    // lazy init
+    private static volatile CleanWaterMapServerAPISingleton instance = null;
+
 
     private final String API_ADDRESS = "https://clean-water-map-server.herokuapp.com/";
 
@@ -23,6 +24,9 @@ public class CleanWaterMapServerAPISingleton {
     }
 
     private static CleanWaterMapServerAPISingleton getSingleton() {
+        if (instance == null) {
+            instance = new CleanWaterMapServerAPISingleton();
+        }
         return instance;
     }
 
