@@ -4,9 +4,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 class WaterProviderLocation {
-    @SerializedName("body")
-    private double latitude;
 
+    @SerializedName("latitude")
+    private double latitude;
+    @SerializedName("longitude")
     private double longitude;
 
     public WaterProviderLocation(double latitude, double longitude) {

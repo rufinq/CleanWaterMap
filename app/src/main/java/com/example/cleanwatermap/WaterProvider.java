@@ -9,19 +9,19 @@ public class WaterProvider {
     @SerializedName("body")
     private LocalDateTime creationDate;
     private TDSMeasurement[] tdsMeasurements;
-    private WaterProviderLocation waterProviderLocation;
-    private byte[] photoData;
+    private WaterProviderLocation location;
+    private String photoData; // base 64
 
-    public WaterProvider(TDSMeasurement[] tdsMeasurements, WaterProviderLocation waterProviderLocation, byte[] photoData) {
+    public WaterProvider(TDSMeasurement[] tdsMeasurements, WaterProviderLocation waterProviderLocation, String photoData) {
         this.tdsMeasurements = tdsMeasurements;
-        this.waterProviderLocation = waterProviderLocation;
+        this.location = waterProviderLocation;
         this.photoData = photoData;
     }
 
-    public WaterProvider(TDSMeasurement tdsMeasurements, WaterProviderLocation waterProviderLocation, byte[] photoData) {
+    public WaterProvider(TDSMeasurement tdsMeasurements, WaterProviderLocation waterProviderLocation, String photoData) {
         this.tdsMeasurements = new TDSMeasurement[1];
         this.tdsMeasurements[0] = tdsMeasurements;
-        this.waterProviderLocation = waterProviderLocation;
+        this.location = waterProviderLocation;
         this.photoData = photoData;
     }
 
@@ -42,18 +42,18 @@ public class WaterProvider {
     }
 
     public WaterProviderLocation getWaterProviderLocation() {
-        return waterProviderLocation;
+        return location;
     }
 
-    public void setWaterProviderLocation(WaterProviderLocation waterProviderLocation) {
-        this.waterProviderLocation = waterProviderLocation;
+    public void setWaterProviderLocation(WaterProviderLocation aLocation) {
+        this.location = aLocation;
     }
 
-    public byte[] getPhotoData() {
+    public String getPhotoData() {
         return photoData;
     }
 
-    public void setPhotoData(byte[] photoData) {
+    public void setPhotoData(String photoData) {
         this.photoData = photoData;
     }
 }

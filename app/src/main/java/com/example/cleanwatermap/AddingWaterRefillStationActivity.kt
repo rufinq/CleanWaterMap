@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -12,10 +13,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.android.synthetic.main.activity_adding_water_refill_station.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 
@@ -57,7 +58,7 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         }
         else
         {
-            Log.e("retrievePhotoData", "Could not find the photo from the intent")
+            Timber.e("Could not find the photo from the intent")
         }
         return bitmap
     }
@@ -72,8 +73,29 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         return byteArray
     }
 
+    fun convertByteArrayToBase64String(aByteArray : ByteArray): String {
+        return Base64.encodeToString(aByteArray, Base64.DEFAULT)
+    }
+
+    fun createNewWaterLocationToAPI(aWaterProvider: WaterProvider) {
+        var waterProviderCall : Call<WaterProvider> = CleanWaterMapServerAPISingleton.API().createWaterProvider(aWaterProvider)
+        waterProviderCall.enqueue(object : Callback<WaterProvider> {
+
+            override fun onResponse(call: Call<WaterProvider>?, response: Response<WaterProvider>?) {
+                if(response != null && response.isSuccessful) {
+                    finish()
+                }
+            }
+
+            override fun onFailure(call: Call<WaterProvider>?, t: Throwable?) {
+
+            }
+        })
+    }
+
     fun addButtonPressed(view: android.view.View) {
         val photoByteArray : ByteArray  = getByteArrayFromBitmap(retrievePhotoData())
+        val base64PhotoData = this.convertByteArrayToBase64String(photoByteArray)
         val aTDSMeasurement = TDSMeasurement(TDSTextEdit.text.toString().toInt())
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
@@ -81,24 +103,11 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
                 if (location != null) {
                     val latitude : Double = location.latitude
                     val longitude : Double = location.longitude
-                    val aWaterProvider = WaterProvider(aTDSMeasurement, WaterProviderLocation(latitude, longitude), photoByteArray)
-                    var waterProviderCall : Call<WaterProvider> = CleanWaterMapServerAPISingleton.API().createWaterProvider(aWaterProvider)
-                    waterProviderCall.enqueue(object : Callback<WaterProvider> {
-
-                        override fun onResponse(call: Call<WaterProvider>?, response: Response<WaterProvider>?) {
-                            if(response != null && response.isSuccessful) {
-                                finish()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<WaterProvider>?, t: Throwable?) {
-
-                        }
-                    })
-
+                    val aWaterProvider = WaterProvider(aTDSMeasurement, WaterProviderLocation(latitude, longitude), base64PhotoData)
+                    this.createNewWaterLocationToAPI(aWaterProvider)
                 }
                 else {
-                    Log.e("addButtonPressed", "location is null on 'addButtonPressed'")
+                    Timber.e("location is null on 'addButtonPressed")
                 }
             }
     }
