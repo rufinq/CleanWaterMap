@@ -1,11 +1,11 @@
 package com.example.cleanwatermap
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Base64
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -63,12 +63,12 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         return bitmap
     }
 
-    private fun getByteArrayFromBitmap(aBitmap: Bitmap?): ByteArray {
+    private fun getByteArrayFromBitmap(aBitmap: Bitmap): ByteArray {
         val bmp: Bitmap? = retrievePhotoData()
         val stream = ByteArrayOutputStream()
-        bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        bmp?.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val byteArray: ByteArray = stream.toByteArray()
-//        bmp.recycle()
+        bmp?.recycle()
         // TODO do I have to recycle here?
         return byteArray
     }
@@ -93,10 +93,24 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         })
     }
 
+    fun getTDSValueFromTDSTextEdit() : Int {
+        val theStringValue = TDSTextEdit.text.toString()
+        if (theStringValue == "") {
+            return 0
+        }
+        else {
+            return TDSTextEdit.text.toString().toInt()
+        }
+    }
+
     fun addButtonPressed(view: android.view.View) {
-        val photoByteArray : ByteArray  = getByteArrayFromBitmap(retrievePhotoData())
+        val photoData = retrievePhotoData()
+        if (photoData == null) {
+            Timber.e("photoData is null in addButtonPressed method")
+        }
+        val photoByteArray : ByteArray  = this.getByteArrayFromBitmap(photoData as Bitmap)
         val base64PhotoData = this.convertByteArrayToBase64String(photoByteArray)
-        val aTDSMeasurement = TDSMeasurement(TDSTextEdit.text.toString().toInt())
+        val aTDSMeasurement = TDSMeasurement(this.getTDSValueFromTDSTextEdit())
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 // Got last known location. In some rare situations this can be null.

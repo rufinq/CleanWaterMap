@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -69,7 +70,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //mMap.addMarker(MarkerOptions().position(planter).title("Planter 's Space"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
         mMap.animateCamera(CameraUpdateFactory.zoomTo( 16.0f ))
+        // TODO improve this code bellow
+        RxPermissions(this).request(Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
+            { granted ->
+                if (granted) {
+                    this.showUserUserPositionAndLocationButton()
+                }
+                else
+                {
+                    Toasty.error(getApplicationContext(), "GPS permission refused")
+                }
+            })
         this.getAllWaterProviderOnMAp()
+    }
+
+    fun requestRuntimeLocationPermission() {
+
+    }
+
+    fun showUserUserPositionAndLocationButton() {
+        mMap.setMyLocationEnabled(true)
+    }
+
+    fun getBitmapDescriptorFromTDSValue(aTDSValue : Int) :  Float {
+        var result = when (aTDSValue) {
+            0 -> BitmapDescriptorFactory.HUE_ROSE
+            in 1..30 -> BitmapDescriptorFactory.HUE_GREEN
+            in 31..50 -> BitmapDescriptorFactory.HUE_YELLOW
+            in 51..75 -> BitmapDescriptorFactory.HUE_ORANGE
+            else ->  BitmapDescriptorFactory.HUE_RED
+        }
+        return result
     }
 
     fun updateGoogleMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
@@ -77,7 +108,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val TDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
             val title : String = "TDS Value: $TDSValue"
             val position = aWaterProvider.waterProviderLocation.convertToLatLng()
-            mMap.addMarker(MarkerOptions().position(position).title(title))
+            var aMarkerOptions = MarkerOptions().position(position).title(title)
+            val floatColor = this.getBitmapDescriptorFromTDSValue(TDSValue)
+            aMarkerOptions = aMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(floatColor))
+            mMap.addMarker(aMarkerOptions)
         }
     }
 
