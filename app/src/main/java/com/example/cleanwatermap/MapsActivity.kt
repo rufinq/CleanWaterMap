@@ -4,6 +4,7 @@ package com.example.cleanwatermap
 // import androidx.core.app.ComponentActivity.ExtraData
 
 import android.Manifest
+import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -46,12 +47,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         this.initTimber()
+        this.removeTitleBar()
     }
 
     private fun initTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         }
+    }
+
+    private fun removeTitleBar() {
+        if (supportActionBar != null)
+            supportActionBar?.hide()
     }
 
     /**
