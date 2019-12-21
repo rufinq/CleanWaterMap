@@ -40,7 +40,9 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/CleanWaterMap">
+            android:label="@string/CleanWaterMap"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
