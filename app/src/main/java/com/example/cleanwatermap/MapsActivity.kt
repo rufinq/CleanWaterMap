@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -29,14 +30,17 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     companion object {
         const val TAG : String = "MapsActivity"
+        const val MarkerHashMapDefaultInitSize : Int = 100
     }
 
     private lateinit var mMap: GoogleMap
     private val REQUEST_IMAGE_CAPTURE = 1
+
+    private lateinit var mMarkersHashMap : HashMap<Marker, WaterProvider>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +52,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         this.initTimber()
         this.removeTitleBar()
+        mMarkersHashMap = HashMap(MarkerHashMapDefaultInitSize)
     }
 
     private fun initTimber() {
@@ -78,6 +83,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
         mMap.animateCamera(CameraUpdateFactory.zoomTo( 16.0f ))
         // TODO improve this code bellow
+        this.requestRuntimeLocationPermission()
+        this.getAllWaterProviderOnMAp()
+        mMap.setOnMarkerClickListener(this)
+        mMap.setOnInfoWindowClickListener {marker: Marker? ->
+            if (marker != null) {
+                switchToWaterProviderDescriptionActivityWithAPICallFromMarker(marker)
+            }
+        }
+    }
+
+    fun requestRuntimeLocationPermission() {
         RxPermissions(this).request(Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
             { granted ->
                 if (granted) {
@@ -88,11 +104,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     Toasty.error(getApplicationContext(), "GPS permission refused")
                 }
             })
-        this.getAllWaterProviderOnMAp()
-    }
-
-    fun requestRuntimeLocationPermission() {
-
     }
 
     fun showUserUserPositionAndLocationButton() {
@@ -110,15 +121,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return result
     }
 
-    fun updateGoogleMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
+    fun updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
         for (aWaterProvider : WaterProvider in waterProviders)  {
             val TDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
             val title : String = "TDS Value: $TDSValue"
             val position = aWaterProvider.waterProviderLocation.convertToLatLng()
-            var aMarkerOptions = MarkerOptions().position(position).title(title)
+            var aMarkerOption = MarkerOptions().position(position).title(title)
             val floatColor = this.getBitmapDescriptorFromTDSValue(TDSValue)
-            aMarkerOptions = aMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(floatColor))
-            mMap.addMarker(aMarkerOptions)
+            aMarkerOption = aMarkerOption.icon(BitmapDescriptorFactory.defaultMarker(floatColor))
+            val addedMarker = mMap.addMarker(aMarkerOption)
+            mMarkersHashMap.put(addedMarker, aWaterProvider)
         }
     }
 
@@ -130,7 +142,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (response.isSuccessful() && response.body() != null) {
                     val waterProviders : List<WaterProvider>? = response.body()
                     if (waterProviders != null) {
-                         updateGoogleMapFromWaterProviderList(waterProviders)
+                        updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders)
                     }
                 }
             }
@@ -199,5 +211,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val intent = Intent(this, AddingWaterRefillStationActivity::class.java)
         intent.putExtra("data", photoData)
         startActivity(intent)
+    }
+
+    private fun switchToWaterProviderDescriptionActivityWithAPICallFromMarker(aMarker: Marker) {
+        val aWaterProvider : WaterProvider? = mMarkersHashMap[aMarker]
+        if (aWaterProvider != null) {
+            var APICall : Call<WaterProvider> = CleanWaterMapServerAPISingleton.API().getOneWaterProvider(aWaterProvider.id)
+            APICall.enqueue {
+                onResponse = {response ->
+                    if (response.isSuccessful()) {
+                        val theWaterProviderClicked : WaterProvider? = response.body()
+                        theWaterProviderClicked?.let {
+                            val intent = Intent(getBaseContext(), WaterProviderDescriptionActivity::class.java)
+                            intent.putExtra(WaterProviderDescriptionActivity.WATER_PROVIDER_INTENT_DATA_KEY, theWaterProviderClicked)
+                            startActivity(intent)
+                        }
+                    }
+                    onFailure = {
+                        Toasty.warning(applicationContext ,"Unable to connect to server").show()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onMarkerClick(aMarker : Marker) : Boolean {
+        return false
     }
 }

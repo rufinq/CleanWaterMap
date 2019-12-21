@@ -1,10 +1,16 @@
 package com.example.cleanwatermap;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.threeten.bp.LocalDateTime;
 
 import com.google.gson.annotations.SerializedName;
 
-public class WaterProvider {
+import java.util.Arrays;
+import java.util.Objects;
+
+public class WaterProvider implements Parcelable {
     private String id;
     @SerializedName("body")
     private LocalDateTime creationDate;
@@ -23,6 +29,25 @@ public class WaterProvider {
         this.tdsMeasurements[0] = tdsMeasurements;
         this.location = waterProviderLocation;
         this.photoData = photoData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WaterProvider that = (WaterProvider) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(creationDate, that.creationDate) &&
+                Arrays.equals(tdsMeasurements, that.tdsMeasurements) &&
+                Objects.equals(location, that.location) &&
+                Objects.equals(photoData, that.photoData);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, creationDate, location, photoData);
+        result = 31 * result + Arrays.hashCode(tdsMeasurements);
+        return result;
     }
 
     public LocalDateTime getCreationDate() {
@@ -49,6 +74,10 @@ public class WaterProvider {
         this.location = aLocation;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getPhotoData() {
         return photoData;
     }
@@ -56,4 +85,37 @@ public class WaterProvider {
     public void setPhotoData(String photoData) {
         this.photoData = photoData;
     }
+
+    protected WaterProvider(Parcel in) {
+        id = in.readString();
+        creationDate = (LocalDateTime) in.readValue(LocalDateTime.class.getClassLoader());
+        location = (WaterProviderLocation) in.readValue(WaterProviderLocation.class.getClassLoader());
+        photoData = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeValue(creationDate);
+        dest.writeValue(location);
+        dest.writeString(photoData);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<WaterProvider> CREATOR = new Parcelable.Creator<WaterProvider>() {
+        @Override
+        public WaterProvider createFromParcel(Parcel in) {
+            return new WaterProvider(in);
+        }
+
+        @Override
+        public WaterProvider[] newArray(int size) {
+            return new WaterProvider[size];
+        }
+    };
 }
