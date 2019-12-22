@@ -5,13 +5,11 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Base64
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import es.dmoral.toasty.Toasty
 import retrofit2.Response
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -76,6 +74,9 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
                 if(response != null && response.isSuccessful) {
                     finish()
                 }
+            }
+            onFailure = {
+                Toasty.warning(baseContext, "Unable to connect to server").show()
             }
         }
     }
