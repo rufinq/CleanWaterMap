@@ -18,12 +18,6 @@ public class WaterProvider implements Parcelable {
     private WaterProviderLocation location;
     private String photoData; // base 64
 
-    public WaterProvider(TDSMeasurement[] tdsMeasurements, WaterProviderLocation waterProviderLocation, String photoData) {
-        this.tdsMeasurements = tdsMeasurements;
-        this.location = waterProviderLocation;
-        this.photoData = photoData;
-    }
-
     public WaterProvider(TDSMeasurement tdsMeasurements, WaterProviderLocation waterProviderLocation, String photoData) {
         this.tdsMeasurements = new TDSMeasurement[1];
         this.tdsMeasurements[0] = tdsMeasurements;
@@ -86,7 +80,7 @@ public class WaterProvider implements Parcelable {
         this.photoData = photoData;
     }
 
-    protected WaterProvider(Parcel in) {
+    private WaterProvider(Parcel in) {
         id = in.readString();
         creationDate = (LocalDateTime) in.readValue(LocalDateTime.class.getClassLoader());
         location = (WaterProviderLocation) in.readValue(WaterProviderLocation.class.getClassLoader());

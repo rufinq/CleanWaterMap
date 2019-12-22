@@ -1,15 +1,12 @@
 package com.example.cleanwatermap
 
-// import androidx.core.app.ComponentActivity.ExtraData
-// import androidx.core.app.ComponentActivity.ExtraData
-
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
+
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,8 +21,8 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import es.dmoral.toasty.Toasty
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import retrofit2.Call
 import retrofit2.Response
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -35,17 +32,18 @@ import java.util.concurrent.TimeUnit
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     companion object {
-        const val TAG : String = "MapsActivity"
         const val MarkerHashMapDefaultInitSize : Int = 100
         const val TIME_PERIOD_BETWEEN_NETWORK_RETRY : Long = 10000 // in milliseconds
+        const val REQUEST_IMAGE_CAPTURE = 1
     }
 
     private lateinit var mMap: GoogleMap
-    private val REQUEST_IMAGE_CAPTURE = 1
 
     private lateinit var mMarkersHashMap : HashMap<Marker, WaterProvider>
 
     private lateinit var mWaterProviderDownloader :  Disposable
+
+    private val mCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +82,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap = googleMap
 
         val planter = LatLng(18.806909, 98.964652)
-        //mMap.addMarker(MarkerOptions().position(planter).title("Planter 's Space"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
         mMap.animateCamera(CameraUpdateFactory.zoomTo( 16.0f ))
         // TODO improve this code bellow
@@ -98,44 +95,44 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    fun requestRuntimeLocationPermission() {
-        RxPermissions(this).request(Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
+    private fun requestRuntimeLocationPermission() {
+        val disposable = RxPermissions(this).request(Manifest.permission.ACCESS_FINE_LOCATION).subscribe()
             { granted ->
                 if (granted) {
                     this.showUserUserPositionAndLocationButton()
                 }
                 else
                 {
-                    Toasty.error(getApplicationContext(), "GPS permission refused")
+                    Toasty.error(applicationContext, "GPS permission refused")
                 }
-            })
+            }
+        mCompositeDisposable.add(disposable)
     }
 
-    fun showUserUserPositionAndLocationButton() {
-        mMap.setMyLocationEnabled(true)
+    private fun showUserUserPositionAndLocationButton() {
+        mMap.isMyLocationEnabled = true
     }
 
-    fun getBitmapDescriptorFromTDSValue(aTDSValue : Int) :  Float {
-        var result = when (aTDSValue) {
+    private fun getBitmapDescriptorFromTDSValue(aTDSValue : Int) :  Float {
+        return when (aTDSValue) {
             0 -> BitmapDescriptorFactory.HUE_ROSE
             in 1..30 -> BitmapDescriptorFactory.HUE_GREEN
             in 31..50 -> BitmapDescriptorFactory.HUE_YELLOW
             in 51..75 -> BitmapDescriptorFactory.HUE_ORANGE
             else ->  BitmapDescriptorFactory.HUE_RED
         }
-        return result
     }
 
     private fun updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
         for (aWaterProvider : WaterProvider in waterProviders)  {
-            val TDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
-            val title : String = "TDS Value: $TDSValue"
+            val theTDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
+            val title = "TDS Value: $theTDSValue"
             val position = aWaterProvider.waterProviderLocation.convertToLatLng()
             var aMarkerOption = MarkerOptions().position(position).title(title)
-            val floatColor = this.getBitmapDescriptorFromTDSValue(TDSValue)
+            val floatColor = this.getBitmapDescriptorFromTDSValue(theTDSValue)
             aMarkerOption = aMarkerOption.icon(BitmapDescriptorFactory.defaultMarker(floatColor))
             val addedMarker = mMap.addMarker(aMarkerOption)
-            mMarkersHashMap.put(addedMarker, aWaterProvider)
+            mMarkersHashMap[addedMarker] = aWaterProvider
         }
     }
 
@@ -147,10 +144,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mWaterProviderDownloader = Observable.interval(0, TIME_PERIOD_BETWEEN_NETWORK_RETRY, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe {
-            var APICall : Call<List<WaterProvider>> = CleanWaterMapServerAPISingleton.API().waterProviders
-            APICall.enqueue {
+            CleanWaterMapServerAPISingleton.API().waterProviders.enqueue {
                 onResponse = {response: Response<List<WaterProvider>> ->
-                    if (response.isSuccessful() && response.body() != null) {
+                    if (response.isSuccessful && response.body() != null) {
                         val waterProviders : List<WaterProvider>? = response.body()
                         if (waterProviders != null) {
                             updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders)
@@ -165,20 +161,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    fun addButtonPressed(view: android.view.View) {
+    fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: android.view.View) {
         takeWaterDispensaryPhoto()
     }
 
      private fun askForRunTimeCameraPermission() {
-         RxPermissions(this)
+         val disposable = RxPermissions(this)
              .request(Manifest.permission.CAMERA) // ask single or multiple permission once
              .subscribe { granted ->
                  if (granted!!) {
-                     Log.v(TAG, "Camera permission allowed")
+                     Timber.v("Camera permission allowed")
                  } else {
-                     Log.e(TAG, "Camera permission denied")
+                     Timber.e("Camera permission denied")
                  }
              }
+         mCompositeDisposable.add(disposable)
      }
 
     private fun doesTheUserGrantedCameraPermission() : Boolean {
@@ -193,7 +190,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         else
         {
-            Log.e(TAG, "ERROR : Camera feature is deactivated at runtime")
+            Timber.e("ERROR : Camera feature is deactivated at runtime")
         }
     }
 
@@ -209,7 +206,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
-            val extras: Bundle? = data.getExtras()
+            val extras: Bundle? = data.extras
             if (extras != null) {
                 val photo: Bitmap? = extras.get("data") as Bitmap
                 if (photo != null) {
@@ -228,13 +225,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun switchToWaterProviderDescriptionActivityWithAPICallFromMarker(aMarker: Marker) {
         val aWaterProvider : WaterProvider? = mMarkersHashMap[aMarker]
         if (aWaterProvider != null) {
-            var APICall : Call<WaterProvider> = CleanWaterMapServerAPISingleton.API().getOneWaterProvider(aWaterProvider.id)
-            APICall.enqueue {
+            CleanWaterMapServerAPISingleton.API().getOneWaterProvider(aWaterProvider.id).enqueue {
                 onResponse = {response ->
-                    if (response.isSuccessful()) {
+                    if (response.isSuccessful) {
                         val theWaterProviderClicked : WaterProvider? = response.body()
                         theWaterProviderClicked?.let {
-                            val intent = Intent(getBaseContext(), WaterProviderDescriptionActivity::class.java)
+                            val intent = Intent(baseContext, WaterProviderDescriptionActivity::class.java)
                             intent.putExtra(WaterProviderDescriptionActivity.WATER_PROVIDER_INTENT_DATA_KEY, theWaterProviderClicked)
                             startActivity(intent)
                         }
@@ -249,5 +245,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerClick(aMarker : Marker) : Boolean {
         return false
+    }
+
+    override fun onDestroy() {
+        mCompositeDisposable.dispose()
+        super.onDestroy()
     }
 }

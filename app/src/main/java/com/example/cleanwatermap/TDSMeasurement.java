@@ -14,7 +14,7 @@ public class TDSMeasurement implements Parcelable {
     String deviceName;
     int tdsValue;
 
-    static String defaultDeviceName = "TDS-3";
+    static private String defaultDeviceName = "TDS-3";
 
     public TDSMeasurement(int tdsValue) {
         this.tdsValue = tdsValue;
@@ -22,7 +22,7 @@ public class TDSMeasurement implements Parcelable {
         this.deviceName = defaultDeviceName;
     }
 
-    protected TDSMeasurement(Parcel in) {
+    private TDSMeasurement(Parcel in) {
         id = in.readString();
         date = (LocalDateTime) in.readValue(LocalDateTime.class.getClassLoader());
         deviceName = in.readString();

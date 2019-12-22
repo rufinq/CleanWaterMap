@@ -9,7 +9,7 @@ public class CleanWaterMapServerAPISingleton {
     private static volatile CleanWaterMapServerAPISingleton instance = null;
 
 
-    private final String API_ADDRESS = "https://clean-water-map-server.herokuapp.com/";
+    private final static String API_ADDRESS = "https://clean-water-map-server.herokuapp.com/";
 
     private CleanWaterMapServerAPI jsonPlaceHolderApi;
 

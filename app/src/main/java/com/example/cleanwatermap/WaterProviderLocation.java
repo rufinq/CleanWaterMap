@@ -55,7 +55,7 @@ class WaterProviderLocation implements Parcelable {
     }
 
 
-    protected WaterProviderLocation(Parcel in) {
+    private WaterProviderLocation(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();
     }

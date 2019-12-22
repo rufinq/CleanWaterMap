@@ -1,7 +1,6 @@
 package com.example.cleanwatermap
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.justinnguyenme.base64image.Base64Image
