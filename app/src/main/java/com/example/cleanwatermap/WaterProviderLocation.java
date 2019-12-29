@@ -54,6 +54,10 @@ class WaterProviderLocation implements Parcelable {
         return new LatLng(latitude, longitude);
     }
 
+    // In meters
+    public double distanceTo(WaterProviderLocation aWaterProviderLocation) {
+        // TODO to implement
+    }
 
     private WaterProviderLocation(Parcel in) {
         latitude = in.readDouble();

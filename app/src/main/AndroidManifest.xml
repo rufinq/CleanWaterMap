@@ -19,9 +19,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WaterProviderDescriptionActivity"
+        <activity android:name=".FilterActivity"></activity>
+        <activity
+            android:name=".WaterProviderDescriptionActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".AddingWaterRefillStationActivity"
             android:configChanges="orientation"
@@ -40,8 +42,8 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/CleanWaterMap"
             android:configChanges="orientation"
+            android:label="@string/CleanWaterMap"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

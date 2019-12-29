@@ -1,6 +1,7 @@
 package com.example.cleanwatermap
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -40,6 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var mMap: GoogleMap
 
     private lateinit var mMarkersHashMap : HashMap<Marker, WaterProvider>
+    private var mSavedWaterProvider : List<WaterProvider>? = null
 
     private lateinit var mWaterProviderDownloader :  Disposable
 
@@ -123,7 +125,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    private fun removeMarkersOnMap() {
+        mMap.clear()
+    }
+
     private fun updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders : List<WaterProvider>) {
+       this.removeMarkersOnMap()
+        mMarkersHashMap.clear()
         for (aWaterProvider : WaterProvider in waterProviders)  {
             val theTDSValue : Int = aWaterProvider.tdsMeasurements.last().tdsValue
             val title = "TDS Value: $theTDSValue"
@@ -140,6 +148,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mWaterProviderDownloader.dispose()
     }
 
+    private fun saveWaterProviders(waterProviders: List<WaterProvider>?) {
+        check(waterProviders != null)
+        mSavedWaterProvider = waterProviders
+    }
+
     private fun getAllWaterProviderOnMapAndRetryOnFailure() {
         mWaterProviderDownloader = Observable.interval(0, TIME_PERIOD_BETWEEN_NETWORK_RETRY, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -148,6 +161,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 onResponse = {response: Response<List<WaterProvider>> ->
                     if (response.isSuccessful && response.body() != null) {
                         val waterProviders : List<WaterProvider>? = response.body()
+                        saveWaterProviders(waterProviders)
                         if (waterProviders != null) {
                             updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders)
                         }
@@ -213,7 +227,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     switchToAddingWaterRefillStationActivityWithPhotoData(photo)
                 }
             }
+        } else if (requestCode == Activity.RESULT_OK && data != null && data.hasExtra(FilterActivity.FILTER_DATA_KEY)) {
+            this.filterWaterProvidersWithFilter()
         }
+    }
+
+    private fun filterWaterProvidersWithFilter() {
+        
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun switchToAddingWaterRefillStationActivityWithPhotoData(photoData: Bitmap) {

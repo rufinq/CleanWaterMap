@@ -80,6 +80,10 @@ public class WaterProvider implements Parcelable {
         this.photoData = photoData;
     }
 
+    public double distanceTo(WaterProvider aWaterProvider) {
+        // TODO to implement
+    }
+
     private WaterProvider(Parcel in) {
         id = in.readString();
         creationDate = (LocalDateTime) in.readValue(LocalDateTime.class.getClassLoader());
