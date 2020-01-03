@@ -11,9 +11,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.example.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT;
-import static com.example.cleanwatermap.TDSMeasurement.UNTESTED_WATER_VALUE;
-
 public class WaterProvider implements Parcelable {
     private String id;
     @SerializedName("body")
@@ -93,18 +90,6 @@ public class WaterProvider implements Parcelable {
 
     public float distanceTo(Location aLocation) {
         return location.distanceTo(aLocation);
-    }
-
-    public boolean matchFilterWithLocation(Location location, FilterData filterData) {
-        if (filterData == null || location == null)
-            return false;
-        if (filterData.getOnlyTDSTestedWaterMachine() && this.lastTDSMeasurementValue() == UNTESTED_WATER_VALUE)
-            return false;
-        if (filterData.getOnlySafeWaterMachine() && this.lastTDSMeasurementValue() > SAFE_TDS_VALUE_LIMIT)
-            return false;
-        if (filterData.ignoreDistance())
-            return true;
-        return this.distanceTo(location) < filterData.getDistance();
     }
 
     private WaterProvider(Parcel in) {

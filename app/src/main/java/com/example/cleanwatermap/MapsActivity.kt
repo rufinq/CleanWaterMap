@@ -40,7 +40,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val MarkerHashMapDefaultInitSize: Int = 100
         const val TIME_PERIOD_BETWEEN_NETWORK_RETRY: Long = 10000 // in milliseconds
         const val REQUEST_IMAGE_CAPTURE = 1
-        const val FILTER_ACTIVITY_REQUEST_CODE = 0;
+        const val FILTER_ACTIVITY_REQUEST_CODE = 0
     }
 
     private lateinit var mMap: GoogleMap
@@ -165,19 +165,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private fun updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(
-        waterProviders: List<WaterProvider>,
-        filter: FilterData?
-    ) {
+    private fun updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders: List<WaterProvider>) {
 
         this.removeMarkersOnMap()
         mMarkersHashMap.clear()
-        if (filter != null) {
+        if (Settings.userSpecifiedFilter) {
             mFusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
                 if (location != null) {
                     for (aWaterProvider: WaterProvider in waterProviders) {
-                        if (aWaterProvider.matchFilterWithLocation(location, filter)) {
+                        if (Settings.matchFilterWithLocationAndWaterProvider(location, aWaterProvider)) {
                             this.addMarkerToMapAndHashMapWithDefaultMarkerOptions(aWaterProvider)
                         }
                     }
@@ -192,7 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders: List<WaterProvider>) {
-        this.updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders, null)
+        this.updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders)
     }
 
     private fun cancelWaterProviderDownloadingRetry() {
@@ -215,9 +212,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                                 val waterProviders: List<WaterProvider>? = response.body()
                                 saveWaterProviders(waterProviders)
                                 if (waterProviders != null) {
-                                    updateGoogleMapAndMarkerHashMapFromWaterProviderList(
-                                        waterProviders
-                                    )
+                                    updateGoogleMapAndMarkerHashMapFromWaterProviderList(waterProviders)
                                 }
                             }
                             cancelWaterProviderDownloadingRetry()
@@ -230,7 +225,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 }
     }
 
-    fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: android.view.View) {
+    fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
         takeWaterDispensaryPhoto()
     }
 
@@ -280,17 +275,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     switchToAddingWaterRefillStationActivityWithPhotoData(photo)
                 }
             }
-        } else if (requestCode == FILTER_ACTIVITY_REQUEST_CODE && data != null && data.hasExtra(FilterActivity.FILTER_DATA_KEY)) {
-            val filterData: FilterData? = extras?.get(FilterActivity.FILTER_DATA_KEY) as FilterData?
-            filterData?.also {
-                this.filterWaterProviders(filterData)
-            }
+        } else if (requestCode == FILTER_ACTIVITY_REQUEST_CODE) {
+            this.filterWaterProviders()
         }
     }
 
-    private fun filterWaterProviders(filterData : FilterData) {
+    private fun filterWaterProviders() {
         mSavedWaterProvider?.also {waterProviders ->
-            this.updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders, filterData)
+            this.updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders)
         }
     }
 
@@ -325,7 +317,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    fun filterButtonPressed(view: View) {
+    fun filterButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, FilterActivity::class.java)
         startActivityForResult(intent, FILTER_ACTIVITY_REQUEST_CODE)
     }

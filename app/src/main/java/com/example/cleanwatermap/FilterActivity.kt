@@ -21,10 +21,7 @@ class FilterActivity : AppCompatActivity() {
 
     companion object {
         const val MINIMUM_DISTANCE = 50
-        const val FILTER_DATA_KEY = "filterData"
     }
-
-    private var mFilterData : FilterData = FilterData()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,17 +30,27 @@ class FilterActivity : AppCompatActivity() {
         this.configureApplyFiltersButton()
         this.configureOnlyTDSTestedWaterMachineSwitch()
         this.configureSafeWaterMachineSwitch()
+        this.updateUIFromFilter()
+    }
+
+    private fun updateUIFromFilter() {
+        if (Settings.userSpecifiedFilter) {
+            distanceSeekBar.progress = this.seekBarValueFromFilterDistance(Settings.filterDistance)
+            onlyTDSTestedWaterMachineSwitch.isChecked = Settings.onlyTDSTestedWaterMachine
+            safeWaterMachineSwitch.isChecked = Settings.onlySafeWaterMachine
+            updateTitleFromSeekBarValue(distanceSeekBar.progress)
+        }
     }
 
     private fun configureSafeWaterMachineSwitch() {
         this.safeWaterMachineSwitch.setOnCheckedChangeListener { _, isChecked ->
-            this.mFilterData.onlySafeWaterMachine = isChecked
+            Settings.onlySafeWaterMachine = isChecked
         }
     }
 
     private fun configureOnlyTDSTestedWaterMachineSwitch() {
         this.onlyTDSTestedWaterMachineSwitch.setOnCheckedChangeListener { _, isChecked ->
-            this.mFilterData.onlyTDSTestedWaterMachine = isChecked
+            Settings.onlyTDSTestedWaterMachine = isChecked
         }
     }
 
@@ -54,8 +61,8 @@ class FilterActivity : AppCompatActivity() {
                                            progress: Int,
                                            fromUser: Boolean) {
                 // write custom code for progress is changed
-                updateTitleFromValue(progress)
-                mFilterData.distance = maxOf(progress * 50, MINIMUM_DISTANCE)
+                updateTitleFromSeekBarValue(progress)
+                Settings.filterDistance = maxOf(progress * 50, MINIMUM_DISTANCE)
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
@@ -74,18 +81,23 @@ class FilterActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTitleFromValue(seekBarValue : Int) {
+    private fun seekBarValueFromFilterDistance(filterDistance : Int) : Int {
+        assert(filterDistance >= 0)
+        return maxOf(filterDistance / 50, MINIMUM_DISTANCE / 50)
+    }
+
+    private fun filterDistanceFromSeekBarValue(seekBarValue : Int) : Int {
+        return maxOf(seekBarValue * 50, MINIMUM_DISTANCE)
+    }
+
+    private fun updateTitleFromSeekBarValue(seekBarValue : Int) {
         // TODO internationalization here
-        val meters : Int = maxOf(seekBarValue * 50, MINIMUM_DISTANCE)
-        val titleText = "Within $meters meters"
-        titleTextView.text = titleText
+        val meters : Int = this.filterDistanceFromSeekBarValue(seekBarValue)
+        titleTextView.text = "Within $meters meters"
     }
 
     private fun sendFilterDataBackToPreviousActivity() {
-        val intent = Intent().apply {
-            putExtra(FILTER_DATA_KEY, mFilterData)
-        }
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK, Intent())
         finish()
     }
 }
