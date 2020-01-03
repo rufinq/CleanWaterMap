@@ -1,5 +1,6 @@
 package com.example.cleanwatermap;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -55,8 +56,11 @@ class WaterProviderLocation implements Parcelable {
     }
 
     // In meters
-    public double distanceTo(WaterProviderLocation aWaterProviderLocation) {
-        // TODO to implement
+    public float distanceTo(Location aLocation) {
+        Location thisLocation = new Location("");
+        thisLocation.setLatitude(latitude);
+        thisLocation.setLongitude(longitude);
+        return thisLocation.distanceTo(aLocation);
     }
 
     private WaterProviderLocation(Parcel in) {

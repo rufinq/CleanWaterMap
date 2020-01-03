@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class FilterData(
-    var meters: Int = Int.MAX_VALUE,
+    var distance: Int = Int.MAX_VALUE,
     var onlyTDSTestedWaterMachine : Boolean = false,
     var onlySafeWaterMachine : Boolean = false) : Parcelable {
 
@@ -15,11 +15,11 @@ data class FilterData(
     )
 
     fun ignoreDistance() : Boolean {
-        return meters == Int.MAX_VALUE
+        return distance == Int.MAX_VALUE;
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(meters)
+        parcel.writeInt(distance)
         parcel.writeByte(if (onlyTDSTestedWaterMachine) 1 else 0)
         parcel.writeByte(if (onlySafeWaterMachine) 1 else 0)
     }

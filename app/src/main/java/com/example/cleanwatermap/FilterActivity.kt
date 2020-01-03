@@ -24,7 +24,7 @@ class FilterActivity : AppCompatActivity() {
         const val FILTER_DATA_KEY = "filterData"
     }
 
-    var mFilterData : FilterData = FilterData()
+    private var mFilterData : FilterData = FilterData()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +55,7 @@ class FilterActivity : AppCompatActivity() {
                                            fromUser: Boolean) {
                 // write custom code for progress is changed
                 updateTitleFromValue(progress)
+                mFilterData.distance = maxOf(progress * 50, MINIMUM_DISTANCE)
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
@@ -67,7 +68,7 @@ class FilterActivity : AppCompatActivity() {
         })
     }
 
-    fun configureApplyFiltersButton() {
+    private fun configureApplyFiltersButton() {
         applyFiltersButton.setOnClickListener {
             this.sendFilterDataBackToPreviousActivity()
         }
@@ -85,5 +86,6 @@ class FilterActivity : AppCompatActivity() {
             putExtra(FILTER_DATA_KEY, mFilterData)
         }
         setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

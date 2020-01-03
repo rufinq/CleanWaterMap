@@ -20,4 +20,15 @@
         android:onClick="addButtonPressed">
     </Button>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:text="Filter"
+        android:padding="10dp"
+        android:layout_marginEnd="60dp"
+        android:paddingEnd="10dp"
+        android:onClick="filterButtonPressed">
+    </Button>
+
 </fragment>

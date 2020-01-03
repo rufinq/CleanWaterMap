@@ -1,5 +1,6 @@
 package com.example.cleanwatermap;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +10,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 import java.util.Objects;
+
+import static com.example.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT;
+import static com.example.cleanwatermap.TDSMeasurement.UNTESTED_WATER_VALUE;
 
 public class WaterProvider implements Parcelable {
     private String id;
@@ -23,6 +27,13 @@ public class WaterProvider implements Parcelable {
         this.tdsMeasurements[0] = tdsMeasurements;
         this.location = waterProviderLocation;
         this.photoData = photoData;
+    }
+
+    public int lastTDSMeasurementValue() {
+        if (BuildConfig.DEBUG) {
+            assert (tdsMeasurements.length > 0);
+        }
+        return tdsMeasurements[tdsMeasurements.length -1].tdsValue;
     }
 
     @Override
@@ -80,8 +91,20 @@ public class WaterProvider implements Parcelable {
         this.photoData = photoData;
     }
 
-    public double distanceTo(WaterProvider aWaterProvider) {
-        // TODO to implement
+    public float distanceTo(Location aLocation) {
+        return location.distanceTo(aLocation);
+    }
+
+    public boolean matchFilterWithLocation(Location location, FilterData filterData) {
+        if (filterData == null || location == null)
+            return false;
+        if (filterData.getOnlyTDSTestedWaterMachine() && this.lastTDSMeasurementValue() == UNTESTED_WATER_VALUE)
+            return false;
+        if (filterData.getOnlySafeWaterMachine() && this.lastTDSMeasurementValue() > SAFE_TDS_VALUE_LIMIT)
+            return false;
+        if (filterData.ignoreDistance())
+            return true;
+        return this.distanceTo(location) < filterData.getDistance();
     }
 
     private WaterProvider(Parcel in) {

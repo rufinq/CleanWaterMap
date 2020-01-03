@@ -15,11 +15,19 @@ public class TDSMeasurement implements Parcelable {
     int tdsValue;
 
     static private String defaultDeviceName = "TDS-3";
+    static private String deviceNameForUntestedWater = "Untested";
+    static public int UNTESTED_WATER_VALUE = 0;
+    static public int SAFE_TDS_VALUE_LIMIT = 30;
 
     public TDSMeasurement(int tdsValue) {
         this.tdsValue = tdsValue;
         this.date = LocalDateTime.now();
-        this.deviceName = defaultDeviceName;
+        if (tdsValue == UNTESTED_WATER_VALUE) {
+            this.deviceName = deviceNameForUntestedWater;
+        }
+        else {
+            this.deviceName = defaultDeviceName;
+        }
     }
 
     private TDSMeasurement(Parcel in) {
