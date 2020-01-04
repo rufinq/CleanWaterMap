@@ -147,7 +147,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun createMarkerOptionsFromAWaterProvider(aWaterProvider: WaterProvider): MarkerOptions {
-        val theTDSValue: Int = aWaterProvider.tdsMeasurements.last().tdsValue
+        val theTDSValue: Int = aWaterProvider.lastTDSMeasurementValue()
         val title = this.createTitleForMarkerOptionFromTDSValue(theTDSValue)
         val position = aWaterProvider.waterProviderLocation.convertToLatLng()
         val aMarkerOption = MarkerOptions().position(position).title(title)
