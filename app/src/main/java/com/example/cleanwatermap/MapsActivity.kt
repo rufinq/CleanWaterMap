@@ -11,6 +11,7 @@ import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT
+import com.example.cleanwatermap.TDSMeasurement.UNTESTED_WATER_VALUE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -137,9 +138,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.clear()
     }
 
+    private fun createTitleForMarkerOptionFromTDSValue(tdsValue : Int) : String {
+        // TODO to internationalize here
+        if (tdsValue == UNTESTED_WATER_VALUE) {
+            return "Untested Water"
+        }
+        return "TDS Value: $tdsValue"
+    }
+
     private fun createMarkerOptionsFromAWaterProvider(aWaterProvider: WaterProvider): MarkerOptions {
         val theTDSValue: Int = aWaterProvider.tdsMeasurements.last().tdsValue
-        val title = "TDS Value: $theTDSValue"
+        val title = this.createTitleForMarkerOptionFromTDSValue(theTDSValue)
         val position = aWaterProvider.waterProviderLocation.convertToLatLng()
         val aMarkerOption = MarkerOptions().position(position).title(title)
         val floatColor = this.getBitmapDescriptorFromTDSValue(theTDSValue)
