@@ -15,20 +15,20 @@ object Settings {
     var filterDistance : Int
         get() = filterData.distance
 
-        set(distance : Int)  {
+        set(distance)  {
             assert(distance >= 0)
             filterData.distance = distance
         }
 
     var onlyTDSTestedWaterMachine : Boolean
         get() = filterData.onlyTDSTestedWaterMachine
-        set(aBoolean: Boolean) {
+        set(aBoolean) {
             filterData.onlyTDSTestedWaterMachine = aBoolean
         }
 
     var onlySafeWaterMachine : Boolean
         get() = filterData.onlySafeWaterMachine
-        set(aBoolean: Boolean) {
+        set(aBoolean) {
             filterData.onlySafeWaterMachine = aBoolean
         }
 
