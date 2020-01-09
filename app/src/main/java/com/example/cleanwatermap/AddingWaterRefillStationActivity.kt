@@ -1,5 +1,6 @@
 package com.example.cleanwatermap
 
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
@@ -81,9 +82,44 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         }
     }
 
+    private fun getTDSValueString() : String {
+        return mTDSTextEdit.text.toString()
+    }
+
+    private fun hasUserSpecifiedA0TDSValue() : Boolean {
+        val stringTextEdit : String =  this.getTDSValueString()
+
+        return stringTextEdit != "" && stringTextEdit.toInt() == 0
+    }
+
+    private fun modifyTDSValueForSpecialCases(aWaterProvider: WaterProvider) {
+        val tdsValueString = this.getTDSValueString()
+        val number : Int = when (tdsValueString) {
+            "" -> TDSMeasurement.UNTESTED_WATER_VALUE
+            "0" -> 1
+            else -> {
+                tdsValueString.toInt()
+            }
+        }
+        aWaterProvider.setLastTDSMeasurementValue(number)
+    }
+
+    private fun showConfirmationDialog(yesClicked : () -> Unit, noClicked : () -> Unit) {
+        // TODO internationalization here
+        val confirmationDialogTitle = "TDS Value"
+        val messageDialog = "Are you SURE the TDS Meter touched the water?"
+
+        AlertDialog.Builder(this)
+            .setTitle(confirmationDialogTitle)
+            .setMessage(messageDialog)
+            .setPositiveButton(android.R.string.yes) { _, _ -> yesClicked() }
+            .setNegativeButton(android.R.string.no) { _, _ -> noClicked() }
+            .show()
+    }
+
     private fun getTDSValueFromTDSTextEdit() : Int {
         val theStringValue = mTDSTextEdit.text.toString()
-        var returnValue = 0
+        var returnValue = TDSMeasurement.UNTESTED_WATER_VALUE
         if (theStringValue != "") {
             returnValue = theStringValue.toInt()
         }
@@ -97,7 +133,8 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         }
         val photoByteArray : ByteArray  = this.getByteArrayFromBitmap(photoData as Bitmap)
         val base64PhotoData = this.convertByteArrayToBase64String(photoByteArray)
-        val aTDSMeasurement = TDSMeasurement(this.getTDSValueFromTDSTextEdit())
+        val tdsValue : Int = this.getTDSValueFromTDSTextEdit()
+        val aTDSMeasurement = TDSMeasurement(tdsValue)
         mFusedLocationClient.lastLocation
             .addOnSuccessListener {location : Location? ->
                 // Got last known location. In some rare situations this can be null.
@@ -105,7 +142,18 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
                     val latitude : Double = location.latitude
                     val longitude : Double = location.longitude
                     val aWaterProvider = WaterProvider(aTDSMeasurement, WaterProviderLocation(latitude, longitude), base64PhotoData)
-                    this.createNewWaterLocationToAPI(aWaterProvider)
+                    var confirmationDialogHasShownAndUserClickedNo = false
+                    if (this.hasUserSpecifiedA0TDSValue()) {
+                        this.showConfirmationDialog(yesClicked = {
+
+                        }, noClicked =  {
+                            confirmationDialogHasShownAndUserClickedNo = true
+                        })
+                    }
+                    if (!confirmationDialogHasShownAndUserClickedNo) {
+                        this.modifyTDSValueForSpecialCases(aWaterProvider)
+                        this.createNewWaterLocationToAPI(aWaterProvider)
+                    }
                 }
                 else {
                     Timber.e("location is null on 'addButtonPressed")

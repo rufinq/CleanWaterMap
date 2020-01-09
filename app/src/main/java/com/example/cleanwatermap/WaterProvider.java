@@ -33,6 +33,10 @@ public class WaterProvider implements Parcelable {
         return tdsMeasurements[tdsMeasurements.length -1].tdsValue;
     }
 
+    public void setLastTDSMeasurementValue(int value) {
+        tdsMeasurements[tdsMeasurements.length - 1].tdsValue = value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
