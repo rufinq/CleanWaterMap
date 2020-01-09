@@ -21,6 +21,7 @@ class FilterActivity : AppCompatActivity() {
 
     companion object {
         const val MINIMUM_DISTANCE = 50
+        const val MAXIMUM_SEEK_BAR_VALUE = 100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +63,12 @@ class FilterActivity : AppCompatActivity() {
                                            fromUser: Boolean) {
                 // write custom code for progress is changed
                 updateTitleFromSeekBarValue(progress)
-                Settings.filterDistance = maxOf(progress * 50, MINIMUM_DISTANCE)
+                if (progress >= MAXIMUM_SEEK_BAR_VALUE) {
+                    Settings.resetDistanceFilter()
+                }
+                else {
+                    Settings.filterDistance = maxOf(progress * 50, MINIMUM_DISTANCE)
+                }
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
@@ -92,8 +98,21 @@ class FilterActivity : AppCompatActivity() {
 
     private fun updateTitleFromSeekBarValue(seekBarValue : Int) {
         // TODO internationalization here
-        val meters : Int = this.filterDistanceFromSeekBarValue(seekBarValue)
-        titleTextView.text = "Within $meters meters"
+        if (seekBarValue >= MAXIMUM_SEEK_BAR_VALUE) {
+            titleTextView.text = "No filter distance"
+        }
+        else {
+            val meters : Int = this.filterDistanceFromSeekBarValue(seekBarValue)
+            if (meters >= 1000) {
+                val km : Double = (meters.toDouble() / 1000.0)
+                val extraS : String = if (meters >= 2000) "s" else ""
+                titleTextView.text = "Within %.1f km${extraS}".format(km)
+            }
+            else {
+                titleTextView.text = "Within $meters meters"
+            }
+
+        }
     }
 
     private fun sendFilterDataBackToPreviousActivity() {

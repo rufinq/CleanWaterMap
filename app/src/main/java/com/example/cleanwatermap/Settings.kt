@@ -37,4 +37,9 @@ object Settings {
         if (filterData.onlySafeWaterMachine && aWaterProvider.lastTDSMeasurementValue() > TDSMeasurement.SAFE_TDS_VALUE_LIMIT) return false
         return if (filterData.ignoreDistance) true else aWaterProvider.distanceTo(location) < filterData.distance
     }
+
+    fun resetDistanceFilter() {
+        filterData.ignoreDistance = true
+    }
+
 }

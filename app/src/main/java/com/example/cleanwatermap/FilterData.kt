@@ -5,8 +5,13 @@ data class FilterData(
     var onlyTDSTestedWaterMachine : Boolean = false,
     var onlySafeWaterMachine : Boolean = false) {
 
-    val ignoreDistance : Boolean
+    var ignoreDistance : Boolean
         get() = distance == Int.MAX_VALUE
+        set(aBoolean : Boolean) {
+            if (aBoolean) {
+                distance = Int.MAX_VALUE
+            }
+        }
 
     val ignoreFilter : Boolean
         get() = ignoreDistance && !onlySafeWaterMachine && !onlyTDSTestedWaterMachine
