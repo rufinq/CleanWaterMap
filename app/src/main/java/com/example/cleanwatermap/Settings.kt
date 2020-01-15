@@ -4,7 +4,7 @@ import android.location.Location
 
 object Settings {
 
-    private var filterData : FilterData = FilterData()
+    var filterData : FilterData = FilterData()
 
     val ignoreFilter : Boolean
         get() = filterData.ignoreFilter

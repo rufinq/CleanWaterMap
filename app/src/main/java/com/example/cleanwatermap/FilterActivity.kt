@@ -19,6 +19,8 @@ class FilterActivity : AppCompatActivity() {
         titleTextView
      */
 
+    private var mTmpFilterData = FilterData()
+
     companion object {
         const val MINIMUM_DISTANCE = 50
         const val MAXIMUM_SEEK_BAR_VALUE = 100
@@ -45,13 +47,13 @@ class FilterActivity : AppCompatActivity() {
 
     private fun configureSafeWaterMachineSwitch() {
         this.safeWaterMachineSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.onlySafeWaterMachine = isChecked
+            mTmpFilterData.onlySafeWaterMachine = isChecked
         }
     }
 
     private fun configureOnlyTDSTestedWaterMachineSwitch() {
         this.onlyTDSTestedWaterMachineSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.onlyTDSTestedWaterMachine = isChecked
+            mTmpFilterData.onlyTDSTestedWaterMachine = isChecked
         }
     }
 
@@ -64,10 +66,10 @@ class FilterActivity : AppCompatActivity() {
                 // write custom code for progress is changed
                 updateTitleFromSeekBarValue(progress)
                 if (progress >= MAXIMUM_SEEK_BAR_VALUE) {
-                    Settings.resetDistanceFilter()
+                    mTmpFilterData.ignoreDistance = true
                 }
                 else {
-                    Settings.filterDistance = maxOf(progress * 50, MINIMUM_DISTANCE)
+                    mTmpFilterData.distance = maxOf(progress * 50, MINIMUM_DISTANCE)
                 }
             }
 
@@ -116,6 +118,7 @@ class FilterActivity : AppCompatActivity() {
     }
 
     private fun sendFilterDataBackToPreviousActivity() {
+        Settings.filterData = mTmpFilterData
         setResult(Activity.RESULT_OK, Intent())
         finish()
     }
