@@ -1,4 +1,4 @@
-package com.example.cleanwatermap;
+package com.bluewater.cleanwatermap;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

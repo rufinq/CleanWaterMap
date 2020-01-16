@@ -1,4 +1,4 @@
-package com.example.cleanwatermap
+package com.bluewater.cleanwatermap
 
 import retrofit2.Call
 import retrofit2.Callback

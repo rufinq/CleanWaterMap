@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cleanwatermap">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.bluewater.cleanwatermap">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -19,13 +20,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FilterActivity"></activity>
         <activity
-            android:name=".WaterProviderDescriptionActivity"
+            android:name="com.bluewater.cleanwatermap.FilterActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".AddingWaterRefillStationActivity"
+            android:name="com.bluewater.cleanwatermap.WaterProviderDescriptionActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+
+
+        </activity>
+        <activity
+            android:name="com.bluewater.cleanwatermap.AddingWaterRefillStationActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <!--
@@ -41,14 +48,32 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name="com.bluewater.cleanwatermap.MapsActivity"
             android:configChanges="orientation"
             android:label="@string/CleanWaterMap"
             android:screenOrientation="portrait">
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="http"
+                    android:host="h2o-map.blue"
+                    android:pathPrefix="/wp/" />
             </intent-filter>
         </activity>
     </application>

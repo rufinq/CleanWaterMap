@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">H2O Finder</string>
+    <string name="app_name">H2O map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="CleanWaterMap">Waterfy</string>
+    <string name="CleanWaterMap">H20 map</string>
     <string name="PPM">PPM</string>
     <string name="add">Add</string>
     <string name="filter">Filter</string>

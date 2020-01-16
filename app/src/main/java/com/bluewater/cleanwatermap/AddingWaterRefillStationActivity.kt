@@ -1,4 +1,4 @@
-package com.example.cleanwatermap
+package com.bluewater.cleanwatermap
 
 import android.app.AlertDialog
 import android.graphics.Bitmap

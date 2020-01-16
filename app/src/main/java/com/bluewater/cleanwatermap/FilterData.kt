@@ -1,4 +1,4 @@
-package com.example.cleanwatermap
+package com.bluewater.cleanwatermap
 
 data class FilterData(
     var distance: Int = Int.MAX_VALUE,

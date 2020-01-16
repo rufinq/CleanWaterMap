@@ -1,17 +1,18 @@
-package com.example.cleanwatermap
+package com.bluewater.cleanwatermap
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT
-import com.example.cleanwatermap.TDSMeasurement.UNTESTED_WATER_VALUE
+import com.bluewater.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT
+import com.bluewater.cleanwatermap.TDSMeasurement.UNTESTED_WATER_VALUE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -67,6 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         this.removeTitleBar()
         mMarkersHashMap = HashMap(MarkerHashMapDefaultInitSize)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        handleAppLinkIntent()
     }
 
     private fun initTimber() {
@@ -102,6 +104,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.setOnInfoWindowClickListener { marker: Marker? ->
             if (marker != null) {
                 switchToWaterProviderDescriptionActivityWithAPICallFromMarker(marker)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleAppLinkIntent()
+    }
+
+    private fun handleAppLinkIntent() {
+        val appLinkIntent : Intent = intent
+        val appLinkData : Uri? = appLinkIntent.data
+        if (appLinkData != null) {
+            val waterProviderID : String? = appLinkData.lastPathSegment
+            CleanWaterMapServerAPISingleton.API().getOneWaterProvider(waterProviderID).enqueue {
+                onResponse = {waterProviderResponse ->
+                    if (waterProviderResponse.isSuccessful)  {
+                        waterProviderResponse.body()?.let {waterProvider ->
+                            val intent = Intent(baseContext, WaterProviderDescriptionActivity::class.java)
+                            intent.putExtra(WaterProviderDescriptionActivity.WATER_PROVIDER_INTENT_DATA_KEY, waterProvider)
+                            startActivity(intent)
+                        }
+                    }
+                    else {
+                        // TODO internationalization here
+                        Toasty.warning(applicationContext, "Incorrect Link")
+                            .show()
+                    }
+                }
+                onFailure = {
+                    // TODO internationalization here
+                    Toasty.warning(applicationContext, "App unable to connect to server")
+                        .show()
+                }
             }
         }
     }
@@ -227,6 +264,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             cancelWaterProviderDownloadingRetry()
                         }
                         onFailure = {
+                            // TODO internationalization here
                             Toasty.warning(applicationContext, "App Unable to connect to server")
                                 .show()
                         }
@@ -301,28 +339,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         startActivity(intent)
     }
 
+    private fun switchToWaterProviderDescriptionActivityWithAPICallFromWaterProviderWithoutPhotoLoaded(aWaterProvider: WaterProvider) {
+        CleanWaterMapServerAPISingleton.API().getOneWaterProvider(aWaterProvider.id).enqueue {
+            onResponse = { response ->
+                if (response.isSuccessful) {
+                    val theWaterProviderClicked: WaterProvider? = response.body()
+                    theWaterProviderClicked?.let {
+                        val intent =
+                            Intent(baseContext, WaterProviderDescriptionActivity::class.java)
+                        intent.putExtra(
+                            WaterProviderDescriptionActivity.WATER_PROVIDER_INTENT_DATA_KEY,
+                            theWaterProviderClicked
+                        )
+                        startActivity(intent)
+                    }
+                }
+                onFailure = {
+                    Toasty.warning(applicationContext, "Unable to connect to server").show()
+                }
+            }
+        }
+    }
+
     private fun switchToWaterProviderDescriptionActivityWithAPICallFromMarker(aMarker: Marker) {
         val aWaterProvider: WaterProvider? = mMarkersHashMap[aMarker]
         if (aWaterProvider != null) {
-            CleanWaterMapServerAPISingleton.API().getOneWaterProvider(aWaterProvider.id).enqueue {
-                onResponse = { response ->
-                    if (response.isSuccessful) {
-                        val theWaterProviderClicked: WaterProvider? = response.body()
-                        theWaterProviderClicked?.let {
-                            val intent =
-                                Intent(baseContext, WaterProviderDescriptionActivity::class.java)
-                            intent.putExtra(
-                                WaterProviderDescriptionActivity.WATER_PROVIDER_INTENT_DATA_KEY,
-                                theWaterProviderClicked
-                            )
-                            startActivity(intent)
-                        }
-                    }
-                    onFailure = {
-                        Toasty.warning(applicationContext, "Unable to connect to server").show()
-                    }
-                }
-            }
+            this.switchToWaterProviderDescriptionActivityWithAPICallFromWaterProviderWithoutPhotoLoaded(aWaterProvider)
         }
     }
 
