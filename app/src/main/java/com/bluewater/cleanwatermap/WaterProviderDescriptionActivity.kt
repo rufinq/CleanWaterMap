@@ -1,14 +1,11 @@
 package com.bluewater.cleanwatermap
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.justinnguyenme.base64image.Base64Image
-import es.dmoral.toasty.Toasty
-import java.util.*
-import kotlin.concurrent.schedule
 
 class WaterProviderDescriptionActivity : AppCompatActivity() {
 
@@ -17,6 +14,7 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var mWaterProviderWaterPhoto : ImageView
+    private var mWaterProvider : WaterProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +43,34 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
     }
 
     private fun retrieveWaterProviderData() : WaterProvider? {
+        if (mWaterProvider != null) {
+            return mWaterProvider
+        }
         val extras = intent.extras
         if (extras != null) {
-            return extras.getParcelable(WATER_PROVIDER_INTENT_DATA_KEY)
+            mWaterProvider = extras.getParcelable(WATER_PROVIDER_INTENT_DATA_KEY)
+            return mWaterProvider
         }
         return null
+    }
+
+    fun shareButtonPressed(view: View) {
+        mWaterProvider?.id?.let { waterProviderID : String ->
+
+            // TODO internationalize here
+            // TODO change hard coded link
+            val website  = "https://www.h2o-map.blue/wp/${waterProviderID}"
+            val textToShare = "Refill water here on H2O Map App ${website}"
+            val sharingIntent = Intent(Intent.ACTION_SEND)
+            sharingIntent.type = "text/plain"
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "H2O Map")
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, textToShare)
+            startActivity(
+                Intent.createChooser(
+                    sharingIntent,
+                    "Share"
+                )
+            )
+        }
     }
 }
