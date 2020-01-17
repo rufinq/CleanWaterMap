@@ -52,27 +52,22 @@
             android:configChanges="orientation"
             android:label="@string/CleanWaterMap"
             android:screenOrientation="portrait">
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
-            <tools:validation testUrl="http://h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
+            <tools:validation testUrl="https://www.h2o-map.blue/wp/5deba8a9789f5800045e3e8c" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="h2o-map.blue"
+                    android:scheme="https"
+                    android:host="www.h2o-map.blue"
                     android:pathPrefix="/wp/" />
             </intent-filter>
         </activity>
