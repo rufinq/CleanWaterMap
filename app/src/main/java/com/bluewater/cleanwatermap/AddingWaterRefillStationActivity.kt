@@ -69,15 +69,17 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         return Base64.encodeToString(aByteArray, Base64.DEFAULT)
     }
 
-    private fun createNewWaterLocationToAPI(aWaterProvider: WaterProvider) {
+    private fun createNewWaterLocationToAPIAndFinishActivityOnResponse(aWaterProvider: WaterProvider, afterResponseOrFailure : (() -> Unit)?) {
         CleanWaterMapServerAPISingleton.API().createWaterProvider(aWaterProvider).enqueue {
             onResponse = {response : Response<WaterProvider>? ->
                 if(response != null && response.isSuccessful) {
                     finish()
                 }
+                if (afterResponseOrFailure != null) afterResponseOrFailure()
             }
             onFailure = {
                 Toasty.warning(baseContext, "Unable to connect to server").show()
+                if (afterResponseOrFailure != null) afterResponseOrFailure()
             }
         }
     }
@@ -126,7 +128,16 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         return returnValue
     }
 
+    private fun deactivateAddButton() {
+        this.mAddButton.isEnabled = false
+    }
+
+    private fun activateAddButton() {
+        this.mAddButton.isEnabled = true
+    }
+
     fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: android.view.View) {
+        this.deactivateAddButton()
         val photoData = retrievePhotoData()
         if (photoData == null) {
             Timber.e("photoData is null in addButtonPressed method")
@@ -152,7 +163,9 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
                     }
                     if (!confirmationDialogHasShownAndUserClickedNo) {
                         this.modifyTDSValueForSpecialCases(aWaterProvider)
-                        this.createNewWaterLocationToAPI(aWaterProvider)
+                        this.createNewWaterLocationToAPIAndFinishActivityOnResponse(aWaterProvider, afterResponseOrFailure =  {
+                            activateAddButton()
+                        })
                     }
                 }
                 else {
