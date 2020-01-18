@@ -33,8 +33,9 @@ object Settings {
         }
 
     fun matchFilterWithLocationAndWaterProvider(location : Location, aWaterProvider : WaterProvider) : Boolean {
-        if (filterData.onlyTDSTestedWaterMachine && aWaterProvider.lastTDSMeasurementValue() == TDSMeasurement.UNTESTED_WATER_VALUE) return false
-        if (filterData.onlySafeWaterMachine && aWaterProvider.lastTDSMeasurementValue() > TDSMeasurement.SAFE_TDS_VALUE_LIMIT) return false
+        val tdsValue = aWaterProvider.lastTDSMeasurementValue()
+        if (filterData.onlyTDSTestedWaterMachine && tdsValue == TDSMeasurement.UNTESTED_WATER_VALUE) return false
+        if (filterData.onlySafeWaterMachine && (tdsValue > TDSMeasurement.SAFE_TDS_VALUE_LIMIT || tdsValue == TDSMeasurement.UNTESTED_WATER_VALUE)) return false
         return if (filterData.ignoreDistance) true else aWaterProvider.distanceTo(location) < filterData.distance
     }
 
