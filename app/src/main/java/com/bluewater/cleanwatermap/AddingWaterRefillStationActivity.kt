@@ -6,6 +6,7 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Base64
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -18,13 +19,16 @@ import java.io.ByteArrayOutputStream
 
 class AddingWaterRefillStationActivity : AppCompatActivity() {
 
+    companion object {
+        const val NEW_PHOTO_KEY_INTENT_DATA_KEY = "data"
+    }
+
     private lateinit  var mWaterRefillWaterPhoto : ImageView
     private lateinit var mAddressContent : TextView
     private lateinit var mTDSTextEdit : EditText
     private lateinit var mAddButton : Button
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +50,7 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
     }
 
     private fun retrievePhotoData() : Bitmap? {
-        val aParcelable : Parcelable? = intent.getParcelableExtra("data")
+        val aParcelable : Parcelable? = intent.getParcelableExtra(NEW_PHOTO_KEY_INTENT_DATA_KEY)
         if (aParcelable != null) {
             return aParcelable as Bitmap
         }
@@ -136,7 +140,7 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         this.mAddButton.isEnabled = true
     }
 
-    fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: android.view.View) {
+    fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
         this.deactivateAddButton()
         val photoData = retrievePhotoData()
         if (photoData == null) {

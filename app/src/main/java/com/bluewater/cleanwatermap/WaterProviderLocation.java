@@ -63,6 +63,18 @@ class WaterProviderLocation implements Parcelable {
         return thisLocation.distanceTo(aLocation);
     }
 
+    public float distanceTo(WaterProviderLocation aWaterProviderLocation) {
+        Location thisLocation = new Location("");
+        thisLocation.setLatitude(latitude);
+        thisLocation.setLongitude(longitude);
+
+        Location distantLocation = new Location("");
+        distantLocation.setLatitude(aWaterProviderLocation.latitude);
+        distantLocation.setLongitude(aWaterProviderLocation.longitude);
+
+        return thisLocation.distanceTo(distantLocation);
+    }
+
     private WaterProviderLocation(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();

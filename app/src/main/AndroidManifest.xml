@@ -20,19 +20,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".DuplicateWaterProviderActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            />
         <activity
-            android:name="com.bluewater.cleanwatermap.FilterActivity"
+            android:name=".FilterActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WaterProviderDescriptionActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.bluewater.cleanwatermap.WaterProviderDescriptionActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
-
-
-        </activity>
-        <activity
-            android:name="com.bluewater.cleanwatermap.AddingWaterRefillStationActivity"
+            android:name=".AddingWaterRefillStationActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <!--
@@ -48,7 +49,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.bluewater.cleanwatermap.MapsActivity"
+            android:name=".MapsActivity"
             android:configChanges="orientation"
             android:label="@string/CleanWaterMap"
             android:screenOrientation="portrait">
@@ -66,9 +67,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="https"
                     android:host="www.h2o-map.blue"
-                    android:pathPrefix="/wp/" />
+                    android:pathPrefix="/wp/"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
     </application>

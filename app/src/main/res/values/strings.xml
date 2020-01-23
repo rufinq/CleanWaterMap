@@ -5,4 +5,7 @@
     <string name="PPM">PPM</string>
     <string name="add">Add</string>
     <string name="filter">Filter</string>
+    <string name="is_this_the_same_water_vending_machine">Is this the same water vending machine?</string>
+    <string name="no_add_it">NO, add it</string>
+    <string name="yes">YES</string>
 </resources>

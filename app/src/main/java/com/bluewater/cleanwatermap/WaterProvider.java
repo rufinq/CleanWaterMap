@@ -1,5 +1,6 @@
 package com.bluewater.cleanwatermap;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -92,8 +93,16 @@ public class WaterProvider implements Parcelable {
         this.photoData = photoData;
     }
 
+    public float distanceTo(WaterProvider waterProvider) {
+        return location.distanceTo(waterProvider.location);
+    }
+
     public float distanceTo(Location aLocation) {
         return location.distanceTo(aLocation);
+    }
+
+    public boolean isCloseTo(WaterProvider aWaterProvider, float thresholdDistance) {
+        return this.distanceTo(aWaterProvider) < thresholdDistance;
     }
 
     private WaterProvider(Parcel in) {

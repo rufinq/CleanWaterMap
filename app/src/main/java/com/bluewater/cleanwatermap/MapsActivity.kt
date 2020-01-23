@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.justinnguyenme.base64image.Base64Image
 import com.tbruyelle.rxpermissions2.RxPermissions
 import es.dmoral.toasty.Toasty
 import io.reactivex.Observable
@@ -43,12 +44,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val TIME_PERIOD_BETWEEN_NETWORK_RETRY: Long = 10000 // in milliseconds
         const val REQUEST_IMAGE_CAPTURE = 1
         const val FILTER_ACTIVITY_REQUEST_CODE = 0
+        const val DISTANCE_THRESHOLD_BETWEEN_2_WATER_PROVIDERS : Float = 10f // in meters
     }
 
     private lateinit var mMap: GoogleMap
 
     private lateinit var mMarkersHashMap: HashMap<Marker, WaterProvider>
-    private var mSavedWaterProvider: List<WaterProvider>? = null
+    private var mSavedWaterProviders: List<WaterProvider>? = null
 
     private lateinit var mWaterProviderDownloader: Disposable
 
@@ -98,7 +100,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f))
         // TODO improve this code bellow
-        this.requestRuntimeLocationPermission()
+        this.requestRuntimeLocationPermission(grantedCallBack = {
+            this.showUserUserPositionAndLocationButton()
+        })
         this.getAllWaterProviderOnMapAndRetryOnFailure()
         mMap.setOnMarkerClickListener(this)
         mMap.setOnInfoWindowClickListener { marker: Marker? ->
@@ -143,12 +147,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private fun requestRuntimeLocationPermission() {
+    private fun requestRuntimeLocationPermission(grantedCallBack : ()->Unit) {
         if (!this.isFinishing && !this.isDestroyed) {
             val disposable = RxPermissions(this).request(Manifest.permission.ACCESS_FINE_LOCATION).subscribe()
             { granted ->
                 if (granted) {
-                    this.showUserUserPositionAndLocationButton()
+                    grantedCallBack()
                 } else {
                     Toasty.error(applicationContext, "GPS permission refused")
                 }
@@ -244,7 +248,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun saveWaterProviders(waterProviders: List<WaterProvider>?) {
         check(waterProviders != null)
-        mSavedWaterProvider = waterProviders
+        mSavedWaterProviders = waterProviders
+    }
+
+    private fun showWarningToastyAppUnableToConnecToServer() {
+        // TODO internationalization here
+        Toasty.warning(applicationContext, "App Unable to connect to server")
+            .show()
     }
 
     private fun getAllWaterProviderOnMapAndRetryOnFailure() {
@@ -264,15 +274,79 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             cancelWaterProviderDownloadingRetry()
                         }
                         onFailure = {
-                            // TODO internationalization here
-                            Toasty.warning(applicationContext, "App Unable to connect to server")
-                                .show()
+                            showWarningToastyAppUnableToConnecToServer()
                         }
                     }
                 }
     }
 
+    private fun updateLastLocation() {
+        mFusedLocationClient.lastLocation
+
+    }
+
+    private fun closestWaterProviderFromLastLocation(
+        onLocationSuccess : (closestWaterProviderWithoutPhoto : WaterProvider?, distanceFromUser : Float)->Unit
+    ) {
+        var waterProviderToReturn : WaterProvider? = null
+        var minimumDistance = Float.MAX_VALUE
+        val savedWaterProviders = mSavedWaterProviders
+        updateLastLocation()
+        if (savedWaterProviders != null && savedWaterProviders.isNotEmpty()) {
+             mFusedLocationClient.lastLocation.addOnSuccessListener {lastLocation: Location? ->
+                 if (lastLocation != null) {
+                     for (waterProvider in savedWaterProviders) {
+                         val distanceToWaterProvider : Float = waterProvider.distanceTo(lastLocation)
+                         if (distanceToWaterProvider < minimumDistance) {
+                             waterProviderToReturn = waterProvider
+                             minimumDistance = distanceToWaterProvider
+                         }
+                     }
+                     onLocationSuccess(waterProviderToReturn, minimumDistance)
+                 }
+             }
+         }
+    }
+
+    private fun switchToDuplicateWaterProviderActivity(newPhoto: Bitmap, closestWaterProviderWithoutPhoto: WaterProvider) {
+        val intent = Intent(this, DuplicateWaterProviderActivity::class.java)
+        CleanWaterMapServerAPISingleton.API().getOneWaterProvider(closestWaterProviderWithoutPhoto.id).enqueue {
+            onResponse = {response ->
+                if (response.isSuccessful) {
+                    val closestWaterProviderWithPhoto = response.body()
+                    if (closestWaterProviderWithPhoto != null) {
+                        bitmapPhotoFromWaterProvider(closestWaterProviderWithPhoto, bitmapCallBack = {closestWaterProviderBitMap ->
+                            intent.putExtra(DuplicateWaterProviderActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY, newPhoto)
+                            intent.putExtra(DuplicateWaterProviderActivity.DB_PHOTO_KEY_INTENT_DATA_KEY, closestWaterProviderBitMap)
+                            startActivity(intent)
+                        })
+                    }
+                }
+                onFailure = {
+                    showWarningToastyAppUnableToConnecToServer()
+                }
+            }
+
+        }
+    }
+
+    private fun bitmapPhotoFromWaterProvider(aWaterProvider: WaterProvider, bitmapCallBack : (Bitmap)->Unit) {
+        Base64Image.instance.decode(aWaterProvider.photoData) { bitmap ->
+            if (bitmap != null ) {
+                bitmapCallBack(bitmap)
+            }
+            else {
+                Timber.e("bitmap is null on bitmapPhotoFromWaterProvider method")
+            }
+        }
+    }
+
     fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
+        /*
+            updateLastLocation()
+            The goal is to update the location when the user is taking the water provider picture.
+         */
+        updateLastLocation()
         takeWaterDispensaryPhoto()
     }
 
@@ -317,9 +391,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val extras: Bundle? = data?.extras
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
             if (extras != null) {
-                val photo: Bitmap? = extras.get("data") as Bitmap
+                val photo: Bitmap? = extras.get(AddingWaterRefillStationActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY) as Bitmap
                 if (photo != null) {
-                    switchToAddingWaterRefillStationActivityWithPhotoData(photo)
+                    this.closestWaterProviderFromLastLocation {closestWaterProviderWithoutPhoto, distanceFromUser : Float ->
+                        val isClosestWaterProviderBellowDistanceThreshold = distanceFromUser < DISTANCE_THRESHOLD_BETWEEN_2_WATER_PROVIDERS
+                        if (isClosestWaterProviderBellowDistanceThreshold && closestWaterProviderWithoutPhoto != null) {
+                            this.switchToDuplicateWaterProviderActivity(photo, closestWaterProviderWithoutPhoto)
+                        }
+                        else
+                            switchToAddingWaterRefillStationActivityWithPhotoData(photo)
+                    }
                 }
             }
         } else if (requestCode == FILTER_ACTIVITY_REQUEST_CODE) {
@@ -328,14 +409,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun filterWaterProviders() {
-        mSavedWaterProvider?.also {waterProviders ->
+        mSavedWaterProviders?.also { waterProviders ->
             this.updateGoogleMapAndMarkerHashMapFromWaterProviderListAndFilter(waterProviders)
         }
     }
 
     private fun switchToAddingWaterRefillStationActivityWithPhotoData(photoData: Bitmap) {
         val intent = Intent(this, AddingWaterRefillStationActivity::class.java)
-        intent.putExtra("data", photoData)
+        intent.putExtra(AddingWaterRefillStationActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY, photoData)
         startActivity(intent)
     }
 
