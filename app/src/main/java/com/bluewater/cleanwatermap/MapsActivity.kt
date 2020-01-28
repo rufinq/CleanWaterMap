@@ -99,9 +99,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val planter = LatLng(18.806909, 98.964652)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(planter))
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f))
-        // TODO improve this code bellow
         this.requestRuntimeLocationPermission(grantedCallBack = {
             this.showUserUserPositionAndLocationButton()
+            // TODO move camera to user location
         })
         this.getAllWaterProviderOnMapAndRetryOnFailure()
         mMap.setOnMarkerClickListener(this)
@@ -133,14 +133,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         }
                     }
                     else {
-                        // TODO internationalization here
-                        Toasty.warning(applicationContext, "Incorrect Link")
+                        Toasty.warning(applicationContext, getString(R.string.Incorrect_Link))
                             .show()
                     }
                 }
                 onFailure = {
-                    // TODO internationalization here
-                    Toasty.warning(applicationContext, "App unable to connect to server")
+                    Toasty.warning(applicationContext, R.string.App_Unable_to_connect_to_server)
                         .show()
                 }
             }
@@ -180,11 +178,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun createTitleForMarkerOptionFromTDSValue(tdsValue : Int) : String {
-        // TODO to internationalize here
         if (tdsValue == UNTESTED_WATER_VALUE) {
-            return "Untested Water"
+            return getString(R.string.Untested_Water)
         }
-        return "TDS Value: $tdsValue"
+        val tdsValueColonString = getString(R.string.TDS_Value_colon)
+        return "$tdsValueColonString $tdsValue"
     }
 
     private fun createMarkerOptionsFromAWaterProvider(aWaterProvider: WaterProvider): MarkerOptions {
@@ -252,8 +250,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun showWarningToastyAppUnableToConnecToServer() {
-        // TODO internationalization here
-        Toasty.warning(applicationContext, "App Unable to connect to server")
+        Toasty.warning(applicationContext, getString(R.string.App_Unable_to_connect_to_server))
             .show()
     }
 

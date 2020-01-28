@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginStart="120dp"
         android:layout_marginBottom="26dp"
-        android:text="Update TDS Value" />
+        android:text="@string/update_tds_value" />
 
     <TextView
         android:id="@+id/addressTextView"

@@ -57,10 +57,10 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
     fun shareButtonPressed(view: View) {
         mWaterProvider?.id?.let { waterProviderID : String ->
 
-            // TODO internationalize here
-            // TODO change hard coded link
-            val website  = "https://www.h2o-map.blue/wp/${waterProviderID}"
-            val textToShare = "Refill water here on H2O Map App ${website}"
+            val rootWebsite = getString(R.string.websiteLink)
+            val website  = rootWebsite + "wp/" + waterProviderID
+            val sentence = getString(R.string.Refill_water_here_on_H2O_Map_App)
+            val textToShare = "$sentence ${website}"
             val sharingIntent = Intent(Intent.ACTION_SEND)
             sharingIntent.type = "text/plain"
             sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "H2O Map")

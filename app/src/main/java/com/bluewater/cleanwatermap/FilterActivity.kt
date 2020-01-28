@@ -99,19 +99,18 @@ class FilterActivity : AppCompatActivity() {
     }
 
     private fun updateTitleFromSeekBarValue(seekBarValue : Int) {
-        // TODO internationalization here
         if (seekBarValue >= MAXIMUM_SEEK_BAR_VALUE) {
-            titleTextView.text = "No filter distance"
+            titleTextView.text = getString(R.string.No_filter_distance)
         }
         else {
             val meters : Int = this.filterDistanceFromSeekBarValue(seekBarValue)
             if (meters >= 1000) {
                 val km : Double = (meters.toDouble() / 1000.0)
-                val extraS : String = if (meters >= 2000) "s" else ""
-                titleTextView.text = "Within %.1f km${extraS}".format(km)
+                titleTextView.text = getString(R.string.Within_X_km_point_1_precision).format(km)  // Within %.1f km
             }
             else {
-                titleTextView.text = "Within $meters meters"
+                val withinXMeterString = getString(R.string.WithinXMeters) // Within X Meters
+                titleTextView.text = withinXMeterString.replace("X", meters.toString())
             }
 
         }

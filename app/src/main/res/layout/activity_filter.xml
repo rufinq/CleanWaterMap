@@ -13,7 +13,7 @@
         android:layout_below="@+id/onlyTDSTestedWaterMachineSwitch"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:text="Safe Machine only "
+        android:text="@string/Safe_Machine_only"
         android:textSize="20sp"/>
 
     <TextView
@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:gravity="center"
-        android:text="Within 100 meters"
+        android:text="@string/Within_100_meters"
         android:textSize="30sp" />
 
     <SeekBar
@@ -41,7 +41,7 @@
         android:layout_below="@+id/distanceSeekBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
-        android:text="Only TDS Tested Machine "
+        android:text="@string/Only_TDS_Tested_Machine"
         android:textSize="20sp"/>
 
     <Button
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="24dp"
-        android:text="Apply Filters"
+        android:text="@string/Apply_Filters"
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

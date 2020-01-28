@@ -111,15 +111,16 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
     }
 
     private fun showConfirmationDialog(yesClicked : () -> Unit, noClicked : () -> Unit) {
-        // TODO internationalization here
-        val confirmationDialogTitle = "TDS Value"
-        val messageDialog = "Are you SURE the TDS Meter touched the water?"
+        val confirmationDialogTitle= getString(R.string.TDS_Value)
+        val messageDialog = getString(R.string.Are_you_SURE_the_TDS_Meter_touched_the_water)
+        val yesString = getString(R.string.yes)
+        val noString = getString(R.string.no)
 
         AlertDialog.Builder(this)
             .setTitle(confirmationDialogTitle)
             .setMessage(messageDialog)
-            .setPositiveButton(android.R.string.yes) { _, _ -> yesClicked() }
-            .setNegativeButton(android.R.string.no) { _, _ -> noClicked() }
+            .setPositiveButton(R.string.yes) { _, _ -> yesClicked() }
+            .setNegativeButton(R.string.no) { _, _ -> noClicked() }
             .show()
     }
 

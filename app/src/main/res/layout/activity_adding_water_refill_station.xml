@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
-        android:text="Add"
+        android:text="@string/add"
         android:onClick="addButtonPressed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="TDS Value"
+        android:text="@string/tds_value"
         app:layout_constraintBaseline_toBaselineOf="@+id/tdsValue"
         app:layout_constraintEnd_toStartOf="@+id/tdsValue"
         app:layout_constraintHorizontal_bias="0.5"
@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="24dp"
-        android:text="Address:"
+        android:text="@string/address"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/addressContent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -90,6 +90,7 @@
         android:layout_marginEnd="24dp"
         android:text="address sample"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/addressTextView" />
+        app:layout_constraintTop_toTopOf="@+id/addressTextView"
+        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
