@@ -57,4 +57,7 @@ dependencies {
 
     // for decoding base64
     implementation 'com.github.JustinNguyenME:base64image:1.0.0'
+
+    // for app update
+    implementation 'com.google.android.play:core:1.6.4'
 }
