@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">H2O map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="CleanWaterMap">H20 map</string>
+    <string name="CleanWaterMap" translatable="false">H20 map</string>
     <string name="PPM">PPM</string>
     <string name="add">Add</string>
     <string name="filter">Filter</string>
@@ -19,7 +19,7 @@
     <string name="Refill_water_here_on_H2O_Map_App">Refill water here on H2O Map App</string>
     <string name="WithinXMeters">Within X Meters</string>
     <string name="Within_X_km_point_1_precision">Within %.1f km</string>
-    <string name="websiteLink">https://www.h2o-map.blue/</string>
+    <string name="websiteLink" translatable="false">https://www.h2o-map.blue/</string>
     <string name="Safe_Machine_only">Safe Machine only</string>
     <string name="Within_100_meters">Within 100 meters</string>
     <string name="Only_TDS_Tested_Machine">Only TDS Tested Machine</string>
