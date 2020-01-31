@@ -131,7 +131,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f))
         this.requestRuntimeLocationPermission(grantedCallBack = {
             this.showUserUserPositionAndLocationButton()
-            // TODO move camera to user location
+            moveCameraToUser()
         })
         this.getAllWaterProviderOnMapAndRetryOnFailure()
         mMap.setOnMarkerClickListener(this)
@@ -311,6 +311,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun updateLastLocation() {
         mFusedLocationClient.lastLocation
 
+    }
+
+    private fun moveCameraToUser() {
+        mFusedLocationClient.lastLocation.addOnSuccessListener {lastLocation ->
+            if (lastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(lastLocation.latitude, lastLocation.longitude)))
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f))
+            }
+        }
     }
 
     private fun closestWaterProviderFromLastLocation(
