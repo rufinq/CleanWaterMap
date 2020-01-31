@@ -24,7 +24,6 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
     }
 
     private lateinit  var mWaterRefillWaterPhoto : ImageView
-    private lateinit var mAddressContent : TextView
     private lateinit var mTDSTextEdit : EditText
     private lateinit var mAddButton : Button
 
@@ -40,7 +39,6 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
 
     private fun performLateInitView() {
         mWaterRefillWaterPhoto = findViewById(R.id.refillStationPhoto)
-        mAddressContent = findViewById(R.id.addressContent)
         mTDSTextEdit = findViewById(R.id.tdsValue)
         mAddButton = findViewById(R.id.addButton)
     }

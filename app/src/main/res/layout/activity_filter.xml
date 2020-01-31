@@ -14,7 +14,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="@string/Safe_Machine_only"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@color/blueMap"
+        />
 
     <TextView
         android:id="@+id/titleTextView"
@@ -24,7 +26,9 @@
         android:layout_marginTop="40dp"
         android:gravity="center"
         android:text="@string/Within_100_meters"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:textColor="@color/blueMap"
+        />
 
     <SeekBar
         android:id="@+id/distanceSeekBar"
@@ -42,7 +46,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
         android:text="@string/Only_TDS_Tested_Machine"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@color/blueMap"
+        />
 
     <Button
         android:id="@+id/applyFiltersButton"
@@ -51,6 +57,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="24dp"
         android:text="@string/Apply_Filters"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:background="@color/blueMap"
+        android:textColor="#ffffff"
+        />
 
 </RelativeLayout>

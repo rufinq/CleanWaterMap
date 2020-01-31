@@ -6,25 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".AddingWaterRefillStationActivity">
 
-    <TextView
-        android:id="@+id/refillStationPhotoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Refill Station Photo"
-        app:layout_constraintBottom_toTopOf="@+id/addressTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/refillStationPhoto" />
-
     <ImageView
         android:id="@+id/refillStationPhoto"
         android:layout_width="251dp"
         android:layout_height="257dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/refillStationPhotoTextView"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -35,8 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
-        android:text="@string/add"
+        android:background="@color/blueMap"
         android:onClick="addButtonPressed"
+        android:text="@string/add"
+        android:textColor="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,8 +39,10 @@
         android:layout_marginStart="109dp"
         android:layout_marginBottom="160dp"
         android:ems="3"
-        android:inputType="number"
         android:hint="@string/PPM"
+        android:inputType="number"
+        android:textSize="32dp"
+        android:textColor="@color/blueMap"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -64,33 +55,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:text="@string/tds_value"
+        android:textColor="@color/blueMap"
+        android:textSize="25dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tdsValue"
         app:layout_constraintEnd_toStartOf="@+id/tdsValue"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.643"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/addressTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/address"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addressContent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.553" />
-
-    <TextView
-        android:id="@+id/addressContent"
-        android:layout_width="243dp"
-        android:layout_height="56dp"
-        android:layout_marginEnd="24dp"
-        android:text="address sample"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/addressTextView"
-        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

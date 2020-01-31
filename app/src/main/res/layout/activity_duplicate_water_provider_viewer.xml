@@ -37,7 +37,9 @@
         android:layout_marginBottom="92dp"
         android:text="@string/is_this_the_same_water_vending_machine"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="25dp" />
+        tools:layout_editor_absoluteX="25dp"
+        android:textColor="@color/blueMap"
+        />
 
     <Button
         android:id="@+id/yesButton"
@@ -49,6 +51,8 @@
         android:layout_marginBottom="21dp"
         android:text="@string/yes"
         android:onClick="yesButtonPressed"
+        android:background="@color/blueMap"
+        android:textColor="#ffffff"
         />
 
     <Button
@@ -61,5 +65,7 @@
         android:layout_marginBottom="23dp"
         android:text="@string/no_add_it"
         android:onClick="noButtonPressed"
+        android:background="@color/blueMap"
+        android:textColor="#ffffff"
         />
 </RelativeLayout>
