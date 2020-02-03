@@ -7,7 +7,6 @@
     <string name="Incorrect_Link">Linkไม่สมบูรณ์</string>
     <string name="No_filter_distance">ไม่ต้องเลือกระยะ</string>
     <string name="Only_TDS_Tested_Machine">เฉพาะเครื่องที่ผ่านการตรวจสอบแล้ว</string>
-    <string name="PPM">หน่วยต่อล้านสวน</string>
     <string name="Refill_water_here_on_H2O_Map_App">เติมน้ำได้ผ่านทางแอพ</string>
     <string name="Safe_Machine_only">เฉพาะเครื่องที่เป็นสีเขียว</string>
     <string name="TDS_Value">หน่วยTDS</string>
