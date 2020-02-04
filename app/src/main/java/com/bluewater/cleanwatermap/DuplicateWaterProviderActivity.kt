@@ -2,12 +2,13 @@ package com.bluewater.cleanwatermap
 
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_duplicate_water_provider_viewer.*
 import timber.log.Timber
+
 
 class DuplicateWaterProviderActivity : AppCompatActivity() {
 
@@ -37,7 +38,9 @@ class DuplicateWaterProviderActivity : AppCompatActivity() {
     private fun switchToAddingWaterRefillStationActivity() {
         val intent = Intent(this, AddingWaterRefillStationActivity::class.java)
         intent.putExtra(AddingWaterRefillStationActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY, newPhotoBitmapFromIntent())
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_TASK_ON_HOME
         startActivity(intent)
+        this.finish() // For replacing the activity
     }
 
     private fun bitMapFromIntent(intentDataKey : String) : Bitmap {
