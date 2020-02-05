@@ -199,7 +199,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun getBitmapDescriptorFromTDSValue(aTDSValue: Int): Float {
         return when (aTDSValue) {
-            0 -> BitmapDescriptorFactory.HUE_ROSE
+            0 -> BitmapDescriptorFactory.HUE_MAGENTA
             in 1..SAFE_TDS_VALUE_LIMIT -> BitmapDescriptorFactory.HUE_GREEN
             in 31..50 -> BitmapDescriptorFactory.HUE_YELLOW
             in 51..75 -> BitmapDescriptorFactory.HUE_ORANGE
