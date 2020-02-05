@@ -507,12 +507,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         startActivityForResult(intent, FILTER_ACTIVITY_REQUEST_CODE)
     }
 
-    override fun onMarkerClick(aMarker: Marker): Boolean {
+    override fun onMarkerClick(aMarker: Marker?): Boolean {
         return false
+        // TODO
+        // update TDS textview and distance on the card
+        // The distance
+        // call showCard
     }
 
     override fun onDestroy() {
         mCompositeDisposable.dispose()
         super.onDestroy()
+    }
+
+    private fun hideCard() {
+        // TODO
+    }
+
+    private fun showCard() {
+        // TODO
+    }
+
+    private fun onCardClick(aMarker: Marker?) {
+        // TODO
+        // call switchToWaterProviderDescriptionActivityWithAPICallFromMarker
     }
 }

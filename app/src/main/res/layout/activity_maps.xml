@@ -34,4 +34,33 @@
         >
     </Button>
 
+    <LinearLayout android:id="@+id/cardView"
+        android:layout_height="wrap_content" style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:background="@color/blueMap"
+        >
+        <TextView android:text="First" android:id="@+id/tdsText"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:layout_gravity="start"
+            tools:ignore="HardcodedText"
+            android:textSize="25sp"
+            android:padding="10dp"
+            />
+        <!--            android:layout_alignParentLeft = "true"
+                    android:layout_alignParentRight = "true"
+        -->
+        <TextView android:textColor="#fff" android:text="Second"
+            android:layout_height="wrap_content" android:id="@+id/secondTextView"
+            android:layout_width="wrap_content" android:layout_marginStart="10dp"
+
+            tools:ignore="HardcodedText"
+            android:textSize="25sp"
+            android:layout_gravity="end"
+            android:padding="10dp"
+            />
+
+    </LinearLayout>
+
 </fragment>
