@@ -9,9 +9,11 @@ import android.util.Base64
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import es.dmoral.toasty.Toasty
+import kotlinx.android.synthetic.main.activity_adding_water_refill_station.*
 import retrofit2.Response
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -131,12 +133,26 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         return returnValue
     }
 
+    private fun setBackgroundButtonColorToBlue() {
+        val color = ContextCompat.getColor(applicationContext, R.color.blueMap)
+        this.addButton.setBackgroundColor(color)
+    }
+
+    private fun setBackgroundButtonColorToGrey() {
+        val color = ContextCompat.getColor(applicationContext, R.color.grey)
+        this.addButton.setBackgroundColor(color)
+    }
+
     private fun deactivateAddButton() {
+        this.setBackgroundButtonColorToGrey()
         this.mAddButton.isEnabled = false
+        this.mAddButton.text = getString(R.string.sending_with_3_dots)
     }
 
     private fun activateAddButton() {
+        this.setBackgroundButtonColorToBlue()
         this.mAddButton.isEnabled = true
+        this.mAddButton.text = getString(R.string.add)
     }
 
     fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
