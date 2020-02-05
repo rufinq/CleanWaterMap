@@ -144,20 +144,20 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         this.addButton.setBackgroundColor(color)
     }
 
-    private fun deactivateAddButton() {
+    private fun disableAddButton() {
         this.setBackgroundButtonColorToGrey()
         this.mAddButton.isEnabled = false
         this.mAddButton.text = getString(R.string.sending_with_3_dots)
     }
 
-    private fun activateAddButton() {
+    private fun enableAddButton() {
         this.setBackgroundButtonColorToBlue()
         this.mAddButton.isEnabled = true
         this.mAddButton.text = getString(R.string.add)
     }
 
     fun addButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
-        this.deactivateAddButton()
+        this.disableAddButton()
         val photoData = retrievePhotoData()
         if (photoData == null) {
             Timber.e("photoData is null in addButtonPressed method")
@@ -184,7 +184,7 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
                     if (!confirmationDialogHasShownAndUserClickedNo) {
                         this.modifyTDSValueForSpecialCases(aWaterProvider)
                         this.createNewWaterLocationToAPIAndFinishActivityOnResponse(aWaterProvider, afterResponseOrFailure =  {
-                            activateAddButton()
+                            enableAddButton()
                         })
                     }
                 }
