@@ -23,6 +23,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.justinnguyenme.base64image.Base64Image
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -44,6 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val TIME_PERIOD_BETWEEN_NETWORK_RETRY: Long = 10000 // in milliseconds
         const val REQUEST_IMAGE_CAPTURE = 1
         const val FILTER_ACTIVITY_REQUEST_CODE = 0
+        const val UPDATE_APP_REQUEST_CODE = 1234
         const val DISTANCE_THRESHOLD_BETWEEN_2_WATER_PROVIDERS : Float = 10f // in meters
     }
 
@@ -61,6 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
+        handleAutoImmediateUpdate()
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -71,6 +76,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMarkersHashMap = HashMap(MarkerHashMapDefaultInitSize)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         handleAppLinkIntent()
+    }
+
+    private fun handleAutoImmediateUpdate() {
+        // https://developer.android.com/guide/playcore/in-app-updates#immediate_flow
+
+        // Creates instance of the manager.
+        val appUpdateManager = AppUpdateManagerFactory.create(baseContext)
+
+        // Returns an intent object that you use to check for an update.
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        // Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                // For a flexible update, use AppUpdateType.FLEXIBLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                    appUpdateInfo,
+                    // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                    AppUpdateType.IMMEDIATE,
+                    // The current activity making the update request.
+                    this,
+                    // Include a request code to later monitor this update request.
+                    UPDATE_APP_REQUEST_CODE)
+
+            }
+        }
     }
 
     private fun initTimber() {
