@@ -39,7 +39,6 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 import java.util.concurrent.TimeUnit
 
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     companion object {
@@ -72,7 +71,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         this.initTimber()
-        this.removeTitleBar()
+        this.removeHeaderBar()
         mMarkersHashMap = HashMap(MarkerHashMapDefaultInitSize)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         handleAppLinkIntent()
@@ -111,11 +110,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         }
-    }
-
-    private fun removeTitleBar() {
-        if (supportActionBar != null)
-            supportActionBar?.hide()
     }
 
     /**

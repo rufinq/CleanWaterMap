@@ -34,6 +34,7 @@ class FilterActivity : AppCompatActivity() {
         this.configureOnlyTDSTestedWaterMachineSwitch()
         this.configureSafeWaterMachineSwitch()
         this.updateUIFromFilter()
+        this.removeHeaderBar()
     }
 
     private fun updateUIFromFilter() {

@@ -21,6 +21,7 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_water_provider_description)
         this.performLateInitView()
         this.updateWaterProviderPhotoFromIntent()
+        this.removeHeaderBar()
     }
 
     private fun performLateInitView() {

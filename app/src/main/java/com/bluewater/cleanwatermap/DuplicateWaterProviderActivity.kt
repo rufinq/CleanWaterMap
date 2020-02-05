@@ -21,6 +21,7 @@ class DuplicateWaterProviderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_duplicate_water_provider_viewer)
         loadBothPhotosFromIntent()
+        this.removeHeaderBar()
     }
 
     fun noButtonPressed(view: View) {

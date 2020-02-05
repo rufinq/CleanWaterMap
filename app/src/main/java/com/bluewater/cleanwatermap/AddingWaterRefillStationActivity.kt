@@ -37,6 +37,7 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         performLateInitView()
         updatePhotoFromIntent()
+        this.removeHeaderBar()
     }
 
     private fun performLateInitView() {
