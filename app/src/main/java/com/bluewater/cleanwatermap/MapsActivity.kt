@@ -449,6 +449,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         } else if (requestCode == FILTER_ACTIVITY_REQUEST_CODE) {
             this.filterWaterProviders()
+            this.moveCameraToUser()
         }
         else if (requestCode == ADDING_WATER_PROVIDER_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             val waterProvider: WaterProvider? = extras?.getParcelable(ADDED_WATER_PROVIDER_KEY_INTENT_DATA_KEY)
