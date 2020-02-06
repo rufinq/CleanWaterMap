@@ -182,7 +182,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 if (granted) {
                     grantedCallBack()
                 } else {
-                    Toasty.error(applicationContext, "GPS permission refused")
+                    Toasty.error(applicationContext, "GPS permission refused").show()
                 }
             }
             mCompositeDisposable.add(disposable)
