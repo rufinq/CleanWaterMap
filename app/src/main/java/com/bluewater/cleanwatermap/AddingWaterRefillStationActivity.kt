@@ -1,6 +1,8 @@
 package com.bluewater.cleanwatermap
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
@@ -78,6 +80,12 @@ class AddingWaterRefillStationActivity : AppCompatActivity() {
         CleanWaterMapServerAPISingleton.API().createWaterProvider(aWaterProvider).enqueue {
             onResponse = {response : Response<WaterProvider>? ->
                 if(response != null && response.isSuccessful) {
+                    val waterProviderFromServer : WaterProvider? = response.body()
+                    if (waterProviderFromServer != null) {
+                        val resultIntent = Intent()
+                        resultIntent.putExtra(MapsActivity.ADDED_WATER_PROVIDER_KEY_INTENT_DATA_KEY, waterProviderFromServer)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                    }
                     finish()
                 }
                 if (afterResponseOrFailure != null) afterResponseOrFailure()

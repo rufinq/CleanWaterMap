@@ -46,8 +46,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val TIME_PERIOD_BETWEEN_NETWORK_RETRY: Long = 10000 // in milliseconds
         const val REQUEST_IMAGE_CAPTURE = 1
         const val FILTER_ACTIVITY_REQUEST_CODE = 0
+        const val ADDING_WATER_PROVIDER_REQUEST_CODE = 2
         const val UPDATE_APP_REQUEST_CODE = 1234
         const val DISTANCE_THRESHOLD_BETWEEN_2_WATER_PROVIDERS : Float = 10f // in meters
+        const val ADDED_WATER_PROVIDER_KEY_INTENT_DATA_KEY = "addedWaterProvider"
     }
 
     private lateinit var mMap: GoogleMap
@@ -214,6 +216,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun createMarkerOptionsFromAWaterProvider(aWaterProvider: WaterProvider): MarkerOptions {
+        // TODO bug here
         val theTDSValue: Int = aWaterProvider.lastTDSMeasurementValue()
         val title = this.createTitleForMarkerOptionFromTDSValue(theTDSValue)
         val position = aWaterProvider.waterProviderLocation.convertToLatLng()
@@ -343,7 +346,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         bitmapPhotoFromWaterProvider(closestWaterProviderWithPhoto, bitmapCallBack = {closestWaterProviderBitMap ->
                             intent.putExtra(DuplicateWaterProviderActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY, newPhoto)
                             intent.putExtra(DuplicateWaterProviderActivity.DB_PHOTO_KEY_INTENT_DATA_KEY, closestWaterProviderBitMap)
-                            startActivity(intent)
+                            startActivityForResult(intent, ADDING_WATER_PROVIDER_REQUEST_CODE)
                         })
                     }
                 }
@@ -431,6 +434,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         } else if (requestCode == FILTER_ACTIVITY_REQUEST_CODE) {
             this.filterWaterProviders()
         }
+        else if (requestCode == ADDING_WATER_PROVIDER_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            val waterProvider: WaterProvider? = extras?.getParcelable(ADDED_WATER_PROVIDER_KEY_INTENT_DATA_KEY)
+            if (waterProvider != null) {
+                addMarkerToMapAndHashMapWithDefaultMarkerOptions(waterProvider)
+            }
+        }
     }
 
     private fun filterWaterProviders() {
@@ -442,7 +451,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun switchToAddingWaterRefillStationActivityWithPhotoData(photoData: Bitmap) {
         val intent = Intent(this, AddingWaterRefillStationActivity::class.java)
         intent.putExtra(AddingWaterRefillStationActivity.NEW_PHOTO_KEY_INTENT_DATA_KEY, photoData)
-        startActivity(intent)
+        startActivityForResult(intent, ADDING_WATER_PROVIDER_REQUEST_CODE)
     }
 
     private fun switchToWaterProviderDescriptionActivityWithAPICallFromWaterProviderWithoutPhotoLoaded(aWaterProvider: WaterProvider) {

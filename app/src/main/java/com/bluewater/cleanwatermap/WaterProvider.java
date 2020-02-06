@@ -27,6 +27,40 @@ public class WaterProvider implements Parcelable {
         this.photoData = photoData;
     }
 
+    protected WaterProvider(Parcel in) {
+        id = in.readString();
+        creationDate = (LocalDateTime)in.readValue(LocalDateTime.class.getClassLoader());
+        tdsMeasurements = in.createTypedArray(TDSMeasurement.CREATOR);
+        location = in.readParcelable(WaterProviderLocation.class.getClassLoader());
+        photoData = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeValue(creationDate);
+        dest.writeTypedArray(tdsMeasurements, flags);
+        dest.writeParcelable(location, flags);
+        dest.writeString(photoData);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<WaterProvider> CREATOR = new Creator<WaterProvider>() {
+        @Override
+        public WaterProvider createFromParcel(Parcel in) {
+            return new WaterProvider(in);
+        }
+
+        @Override
+        public WaterProvider[] newArray(int size) {
+            return new WaterProvider[size];
+        }
+    };
+
     public int lastTDSMeasurementValue() {
         if (BuildConfig.DEBUG) {
             assert (tdsMeasurements.length > 0);
@@ -105,36 +139,4 @@ public class WaterProvider implements Parcelable {
         return this.distanceTo(aWaterProvider) < thresholdDistance;
     }
 
-    private WaterProvider(Parcel in) {
-        id = in.readString();
-        creationDate = (LocalDateTime) in.readValue(LocalDateTime.class.getClassLoader());
-        location = (WaterProviderLocation) in.readValue(WaterProviderLocation.class.getClassLoader());
-        photoData = in.readString();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeValue(creationDate);
-        dest.writeValue(location);
-        dest.writeString(photoData);
-    }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<WaterProvider> CREATOR = new Parcelable.Creator<WaterProvider>() {
-        @Override
-        public WaterProvider createFromParcel(Parcel in) {
-            return new WaterProvider(in);
-        }
-
-        @Override
-        public WaterProvider[] newArray(int size) {
-            return new WaterProvider[size];
-        }
-    };
 }
