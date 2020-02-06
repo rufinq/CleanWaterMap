@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
 
@@ -37,7 +38,10 @@ import io.reactivex.disposables.Disposable
 import retrofit2.Response
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
+import kotlin.concurrent.schedule
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -131,7 +135,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f))
         this.requestRuntimeLocationPermission(grantedCallBack = {
             this.showUserUserPositionAndLocationButton()
-            // TODO move camera to user location
+            // The Timer here is a hack.The location would be 1 km north without it without this 1s delay
+            Timer().schedule(1000) {
+                moveCameraToUser()
+            }
         })
         this.getAllWaterProviderOnMapAndRetryOnFailure()
         mMap.setOnMarkerClickListener(this)
@@ -182,7 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 if (granted) {
                     grantedCallBack()
                 } else {
-                    Toasty.error(applicationContext, "GPS permission refused")
+                    Toasty.error(applicationContext, "GPS permission refused").show()
                 }
             }
             mCompositeDisposable.add(disposable)
@@ -311,6 +318,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun updateLastLocation() {
         mFusedLocationClient.lastLocation
 
+    }
+
+    private fun moveCameraToUser() {
+        mFusedLocationClient.lastLocation.addOnSuccessListener {lastLocation : Location?->
+            if (lastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(lastLocation.latitude, lastLocation.longitude)))
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(16.0f))
+            }
+        }
     }
 
     private fun closestWaterProviderFromLastLocation(
