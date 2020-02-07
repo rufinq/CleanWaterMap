@@ -225,7 +225,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun createMarkerOptionsFromAWaterProvider(aWaterProvider: WaterProvider): MarkerOptions {
-        // TODO bug here
         val theTDSValue: Int = aWaterProvider.lastTDSMeasurementValue()
         val title = this.createTitleForMarkerOptionFromTDSValue(theTDSValue)
         val position = aWaterProvider.waterProviderLocation.convertToLatLng()
