@@ -31,4 +31,7 @@
     <string name="average_purity">ความบริสุทธิ์ปานกลาง</string>
     <string name="poor_purity">ความบริสุทธิ์ต่ำ</string>
     <string name="very_poor_purity">ไม่ควรบริโภค</string>
+    <string name="km">กิโลเมตร</string>
+    <string name="meters">เมตร</string>
+    <string name="sending_with_3_dots">กำลังส่ง</string>
 </resources>

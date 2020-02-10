@@ -7,9 +7,9 @@ import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
+import android.widget.TextView
 
 import androidx.appcompat.app.AppCompatActivity
 import com.bluewater.cleanwatermap.TDSMeasurement.SAFE_TDS_VALUE_LIMIT
@@ -57,6 +57,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val LIGHT_ORANGE_COLOR_MARKER = 40.0f
     }
 
+
     private lateinit var mMap: GoogleMap
 
     private lateinit var mMarkersHashMap: HashMap<Marker, WaterProvider>
@@ -67,6 +68,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private val mCompositeDisposable = CompositeDisposable()
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var mCardView: View
+
+    private lateinit var mDistanceTextInCardView : TextView
+    private lateinit var mTDSTextInCardView : TextView
+
+    private var mWaterProviderClickedOnMap : WaterProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +156,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 switchToWaterProviderDescriptionActivityWithAPICallFromMarker(marker)
             }
         }
+        this.disableNavigationIcons()
+        this.setUpCardView()
+    }
+
+    private fun disableNavigationIcons() {
+        mMap.uiSettings.isMapToolbarEnabled = false
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -499,6 +513,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         if (aWaterProvider != null) {
             this.switchToWaterProviderDescriptionActivityWithAPICallFromWaterProviderWithoutPhotoLoaded(aWaterProvider)
         }
+
     }
 
     fun filterButtonPressed(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -506,29 +521,68 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         startActivityForResult(intent, FILTER_ACTIVITY_REQUEST_CODE)
     }
 
+    private fun setUpCardView() {
+        mCardView = findViewById(R.id.cardView)
+        mDistanceTextInCardView = findViewById(R.id.distanceText)
+        mTDSTextInCardView = findViewById(R.id.tdsText)
+        mCardView.setOnClickListener {
+            this.onCardClick()
+        }
+        this.hideCard()
+    }
+
+
     override fun onMarkerClick(aMarker: Marker?): Boolean {
+        mWaterProviderClickedOnMap = mMarkersHashMap[aMarker]
+        if (aMarker != null) {
+            val waterProviderClickedOnMap = mWaterProviderClickedOnMap
+            if (waterProviderClickedOnMap != null) {
+                this.showCard()
+                val tdsValueString = getString(R.string.TDS_Value_colon)
+                val theTDSText  = "${tdsValueString} X".replace("X", waterProviderClickedOnMap.lastTDSMeasurementValue().toString())
+                this.setTDSTextOnCardView(theTDSText)
+                mFusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        val distanceFromUser =  waterProviderClickedOnMap.distanceTo(location).toInt()
+                        this.setDistanceTextOnCardView(this.distanceString(distanceFromUser))
+                    }
+                }
+            }
+        }
+        else {
+            this.hideCard()
+        }
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
         return false
-        // TODO
-        // update TDS textview and distance on the card
-        // The distance
-        // call showCard
+    }
+
+    private fun hideCard() {
+        mCardView.visibility = View.GONE
+    }
+
+    private fun showCard() {
+        mCardView.visibility = View.VISIBLE
+    }
+
+    private fun onCardClick() {
+        val wp = mWaterProviderClickedOnMap
+        if (wp != null) {
+            this.switchToWaterProviderDescriptionActivityWithAPICallFromWaterProviderWithoutPhotoLoaded(wp)
+        }
+    }
+
+    private fun setTDSTextOnCardView(text : String) {
+        this.mTDSTextInCardView.text = text
+    }
+
+    private fun setDistanceTextOnCardView(text : String) {
+        this.mDistanceTextInCardView.text = text
     }
 
     override fun onDestroy() {
         mCompositeDisposable.dispose()
         super.onDestroy()
-    }
-
-    private fun hideCard() {
-        // TODO
-    }
-
-    private fun showCard() {
-        // TODO
-    }
-
-    private fun onCardClick(aMarker: Marker?) {
-        // TODO
-        // call switchToWaterProviderDescriptionActivityWithAPICallFromMarker
     }
 }

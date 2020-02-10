@@ -38,7 +38,7 @@
         android:layout_height="wrap_content" style="@android:style/Widget.Button"
         android:layout_width="match_parent"
         android:layout_gravity="bottom"
-        android:background="@color/blueMap"
+        android:background="@color/blueMapWith80Transparent"
         >
         <TextView android:text="First" android:id="@+id/tdsText"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -51,10 +51,13 @@
         <!--            android:layout_alignParentLeft = "true"
                     android:layout_alignParentRight = "true"
         -->
-        <TextView android:textColor="#fff" android:text="Second"
-            android:layout_height="wrap_content" android:id="@+id/secondTextView"
-            android:layout_width="wrap_content" android:layout_marginStart="10dp"
+        <TextView android:textColor="#fff"
 
+            android:text="Second"
+            android:layout_height="wrap_content"
+            android:id="@+id/distanceText"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="10dp"
             tools:ignore="HardcodedText"
             android:textSize="25sp"
             android:layout_gravity="end"

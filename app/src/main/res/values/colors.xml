@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="blueMap">#2699fb</color>
+    <color name="blueMapWith80Transparent">#DD2699fb</color>
     <color name="grey">#C0C0C0</color>
 </resources>
