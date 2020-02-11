@@ -10,6 +10,7 @@ import org.threeten.bp.LocalDateTime;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 
 public class WaterProvider implements Parcelable {
@@ -70,6 +71,10 @@ public class WaterProvider implements Parcelable {
 
     public void setLastTDSMeasurementValue(int value) {
         tdsMeasurements[tdsMeasurements.length - 1].tdsValue = value;
+    }
+
+    public String googleNavigationString() {
+        return String.format(Locale.getDefault(), "google.navigation:q=%.7f,%.7f&mode=l", this.location.getLatitude(), this.location.getLongitude());
     }
 
     @Override

@@ -54,6 +54,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         const val UPDATE_APP_REQUEST_CODE = 1234
         const val DISTANCE_THRESHOLD_BETWEEN_2_WATER_PROVIDERS : Float = 10f // in meters
         const val ADDED_WATER_PROVIDER_KEY_INTENT_DATA_KEY = "addedWaterProvider"
+        const val LIGHT_ORANGE_COLOR_MARKER = 40.0f
     }
 
     private lateinit var mMap: GoogleMap
@@ -201,11 +202,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun getBitmapDescriptorFromTDSValue(aTDSValue: Int): Float {
+        // code debt use TDSInfoCategory
         return when (aTDSValue) {
             0 -> BitmapDescriptorFactory.HUE_MAGENTA
             in 1..SAFE_TDS_VALUE_LIMIT -> BitmapDescriptorFactory.HUE_GREEN
             in 31..50 -> BitmapDescriptorFactory.HUE_YELLOW
-            in 51..75 -> BitmapDescriptorFactory.HUE_ORANGE
+            in 51..75 -> LIGHT_ORANGE_COLOR_MARKER
             else -> BitmapDescriptorFactory.HUE_RED
         }
     }

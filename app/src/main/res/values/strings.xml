@@ -28,4 +28,12 @@
     <string name="address">Address:</string>
     <string name="update_tds_value">Update TDS Value</string>
     <string name="sending_with_3_dots">Sending...</string>
+    <string name="share">share</string>
+    <string name="direction">direction</string>
+    <string name="high_purity">High Purity</string>
+    <string name="average_purity">Average Purity</string>
+    <string name="poor_purity">Poor Purity</string>
+    <string name="very_poor_purity">Very Poor Purity</string>
+    <string name="low_purity">Low Purity</string>
+    <string name="Untested">Untested</string>
 </resources>
