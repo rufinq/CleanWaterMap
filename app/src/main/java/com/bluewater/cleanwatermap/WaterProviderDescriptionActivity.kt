@@ -1,11 +1,19 @@
 package com.bluewater.cleanwatermap
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.justinnguyenme.base64image.Base64Image
+import kotlinx.android.synthetic.main.activity_water_provider_description.*
+import timber.log.Timber
+
 
 class WaterProviderDescriptionActivity : AppCompatActivity() {
 
@@ -22,6 +30,56 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
         this.performLateInitView()
         this.updateWaterProviderPhotoFromIntent()
         this.removeHeaderBar()
+        this.updateTDSTextView()
+        this.setWaterDropImageFromTdsValue()
+        this.setPurityTextViewFromTdsValue()
+    }
+
+    private fun setWaterDropImageFromTdsValue() {
+        // Update image based on number
+
+        val waterProvider : WaterProvider? = mWaterProvider
+        if (waterProvider != null) {
+            val theTDSInfo = TDSInfo(waterProvider.lastTDSMeasurementValue())
+            val id =  theTDSInfo.tdsInfoCategory.waterDropImageID
+            waterDropImage.setBackgroundResource(id)
+        }
+    }
+
+    private fun setPurityTextViewFromTdsValue() {
+        val waterProvider : WaterProvider? = mWaterProvider
+        if (waterProvider != null) {
+            val theTDSInfo = TDSInfo(waterProvider.lastTDSMeasurementValue())
+            val textColor = theTDSInfo.tdsInfoCategory.textColor
+            val purity: Spannable = SpannableString(theTDSInfo.tdsInfoCategory.purityString)
+            purity.setSpan(
+                ForegroundColorSpan(textColor),
+                0,
+                purity.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            purityTextView.text = purity
+        }
+    }
+
+    private fun updateTDSTextView() {
+        val waterProvider : WaterProvider? = mWaterProvider
+        if (waterProvider != null) {
+            val theTDSInfo = TDSInfo(waterProvider.lastTDSMeasurementValue())
+            val tdsValueStringString = theTDSInfo.tdsInfoCategory.tdsValueString
+
+            val wordTwo: Spannable = SpannableString(tdsValueStringString)
+            wordTwo.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.blueMap)),
+                0,
+                wordTwo.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            tdsTextView.text = wordTwo
+        }
+        else {
+            Timber.e("waterProvider is null in updateTDSTextView method")
+        }
     }
 
     private fun performLateInitView() {
@@ -72,6 +130,18 @@ class WaterProviderDescriptionActivity : AppCompatActivity() {
                     "Share"
                 )
             )
+        }
+    }
+
+    fun directionButtonPressed(view: View) {
+        val waterProvider = mWaterProvider
+        if (waterProvider != null) {
+            val gmmIntentUri: Uri = Uri.parse(waterProvider.googleNavigationString())
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            if (mapIntent.resolveActivity(packageManager) != null) {
+                startActivity(mapIntent)
+            }
         }
     }
 }

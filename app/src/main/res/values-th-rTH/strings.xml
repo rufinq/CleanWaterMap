@@ -24,4 +24,11 @@
     <string name="Within_100_meters">ภายใน 100 เมตร</string>
     <string name="WithinXMeters">ภายใน X เมตร</string>
     <string name="Within_X_km_point_1_precision">ในระยะทาง %.1f กิโลเมตร</string>
+    <string name="share">ส่งให้เพื่อน</string>
+    <string name="direction">นำทาง</string>
+    <string name="sending_with_3_dots">กำลังส่ง</string>
+    <string name="high_purity">ความบริสุทธิ์สูง</string>
+    <string name="average_purity">ความบริสุทธิ์ปานกลาง</string>
+    <string name="poor_purity">ความบริสุทธิ์ต่ำ</string>
+    <string name="very_poor_purity">ไม่ควรบริโภค</string>
 </resources>
