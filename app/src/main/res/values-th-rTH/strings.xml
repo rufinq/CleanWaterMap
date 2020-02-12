@@ -33,4 +33,6 @@
     <string name="very_poor_purity">ไม่ควรบริโภค</string>
     <string name="km">กิโลเมตร</string>
     <string name="meters">เมตร</string>
+    <string name="Untested">ไม่ได้ทดสอบ</string>
+    <string name="low_purity">ต่ำ</string>
 </resources>
