@@ -15,7 +15,7 @@
         android:padding="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginStart="40dp"
-        android:drawableTop="@drawable/smallest_plus"
+        android:drawableTop="@drawable/plus_icon"
         android:onClick="addButtonPressed"
         android:background="#0000">
     </Button>
@@ -24,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:text="@string/filter"
         android:textColor="#0000FF"
         android:padding="30dp"
         android:layout_marginEnd="60dp"
@@ -51,6 +50,14 @@
         <!--            android:layout_alignParentLeft = "true"
                     android:layout_alignParentRight = "true"
         -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/button_idicator_for_bottom_card"
+            android:paddingBottom="30dp"
+            />
+
+
         <TextView android:textColor="#fff"
 
             android:text="Second"
