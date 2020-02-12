@@ -33,7 +33,9 @@
     <string name="high_purity">High Purity</string>
     <string name="average_purity">Average Purity</string>
     <string name="poor_purity">Poor Purity</string>
-    <string name="very_poor_purity">Very Poor Purity</string>
     <string name="low_purity">Low Purity</string>
+    <string name="very_poor_purity">Very Poor Purity</string>
     <string name="Untested">Untested</string>
+    <string name="km">km</string>
+    <string name="meters">meters</string>
 </resources>
